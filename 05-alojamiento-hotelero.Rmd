@@ -30,8 +30,8 @@ library(ggtext)
 #anio de referencia de publicación
 options(scipen = 99)
 
-Anio <- 2022 #puna
-anio_texto_puna <- "2022" #puna
+Anio <- 2023 #puna
+anio_texto_puna <- "2023" #puna
 anio_ref <- 2022 #eoh
 anio_texto <- "2022" #eoh
 
@@ -53,13 +53,9 @@ puna <- herramientas::read_file_srv("/srv/DataDNMYE/puna/serie_puna.csv") %>%
 
 El objetivo del presente capítulo es **realizar una descripción cuantitativa y cualitativa del sector de alojamiento en la Argentina**. Con este fin, en la primera sección se brinda información de la oferta de alojamiento turístico colectivo para cada una de las provincias por tipo y categoría de los mismos a partir de datos provistos por organismos de turismo provinciales y municipales; mientras que en la segunda sección, se analiza la dinámica oferta-demanda de la actividad hotelera y parahotelera a partir de la información de la Encuesta de Ocupación Hotelera (EOH).
 
-Cabe mencionar que los datos del Padrón Único Nacional de Alojamiento (PUNA) del año 2021 presentados en este capítulo difieren levemente de los consignados en el anuario 2021 debido a que se realizaron ajustes con el cierre del PUNA 2022. En este sentido, actualmente se está trabajando en un nuevo sistema de gestión de datos en dataTUR, que permitirá actualizar el PUNA de manera más eficiente.
-
 ## Oferta de Alojamiento Turístico Colectivo
 
 La siguiente sección se elaboró con los datos extraídos del Padrón Único Nacional de Alojamiento (PUNA) que elabora anualmente la Dirección Nacional de Mercados y Estadística (DNMyE) a partir de la información aportada por los organismos de turismo provinciales y municipales y el INDEC.
-
-La información presentada a continuación está referida a un período excepcional que transitó el mundo, y que tuvo un impacto negativo directo en el turismo como fue la pandemia por la COVID 19.
 
 ### Evolución histórica de la oferta de alojamientos hoteleros, parahoteleros y otros colectivos 
 
@@ -314,10 +310,10 @@ tabla1 <- data_cuadro1 %>%
     clasificacion_mintur = md("**Clasificación**"),
     establecimientos_2015 = md("**Establecimientos**"),
     plazas_2015 = md("**Plazas**"),
-    establecimientos_2022  = md("**Establecimientos**") ,
-    plazas_2022  = md("**Plazas**"),
-    var_ia_est_2022 = md("**Establecimientos**"),
-    var_ia_pla_2022 = md("**Plazas**")
+    establecimientos_2023  = md("**Establecimientos**") ,
+    plazas_2023  = md("**Plazas**"),
+    var_ia_est_2023 = md("**Establecimientos**"),
+    var_ia_pla_2023 = md("**Plazas**")
   ) %>% 
     gt_theme_dnmye(var_total = clasificacion_mintur) %>% 
   fmt_number(columns = c(3,4,5,6), decimals = 0, dec_mark = ",", sep_mark = ".") %>% 
@@ -325,8 +321,8 @@ tabla1 <- data_cuadro1 %>%
   cols_align(
     align = "center",
     columns = c(establecimientos_2015, plazas_2015,
-                   establecimientos_2022, plazas_2022,
-                   var_ia_est_2022, var_ia_pla_2022))  %>% 
+                   establecimientos_2023, plazas_2023,
+                   var_ia_est_2023, var_ia_pla_2023))  %>% 
   tab_source_note(
     source_note = md(
       "**Fuente**: DNMyE en base a datos del PUNA")
@@ -335,11 +331,11 @@ tabla1 <- data_cuadro1 %>%
     label = md("**2015**"),
     columns = c(establecimientos_2015, plazas_2015)) %>%
   tab_spanner(
-    label = md("**2022**"),
-    columns = c(establecimientos_2022, plazas_2022)) %>%
+    label = md("**2023**"),
+    columns = c(establecimientos_2023, plazas_2023)) %>%
     tab_spanner(
-    label = md("**Var % i.a. 2021/2015**"),
-    columns = c(var_ia_est_2022, var_ia_pla_2022)) %>%
+    label = md("**Var % i.a. 2023/2015**"),
+    columns = c(var_ia_est_2023, var_ia_pla_2023)) %>%
   tab_options(row_group.font.weight = "bold",
               container.height = 600,
               container.overflow.y = T) %>% 
@@ -393,7 +389,7 @@ total <- data_cuadro2 %>%
 data_cuadro2 <- rbind(total, data_cuadro2, totales) %>% 
   pivot_wider(names_from = "anio", 
               values_from = c("establecimientos", "plazas","var_ia_est","var_ia_pla")) %>% 
-  select(-c(var_ia_est_2021, var_ia_pla_2021))
+  select(-c(var_ia_est_2022, var_ia_pla_2022))
 
 
 tabla2 <- data_cuadro2 %>% 
@@ -403,34 +399,34 @@ tabla2 <- data_cuadro2 %>%
    cols_label(
     tipo = md(""),
     clasificacion_mintur = md("**Clasificación**"),
-    establecimientos_2021 = md("**Establecimientos**"),
-    plazas_2021 = md("**Plazas**"),
-    establecimientos_2022  = md("**Establecimientos**") ,
-    plazas_2022  = md("**Plazas**"),
-    var_ia_est_2022 = md("**Establecimientos**"),
-    var_ia_pla_2022 = md("**Plazas**")
+    establecimientos_2022 = md("**Establecimientos**"),
+    plazas_2022 = md("**Plazas**"),
+    establecimientos_2023  = md("**Establecimientos**") ,
+    plazas_2023  = md("**Plazas**"),
+    var_ia_est_2023 = md("**Establecimientos**"),
+    var_ia_pla_2023 = md("**Plazas**")
   ) %>% 
   gt_theme_dnmye(var_total = clasificacion_mintur) %>% 
   fmt_number(columns = c(3,4,5,6), decimals = 0, dec_mark = ",", sep_mark = ".") %>% 
   fmt_percent(columns = c(7,8), decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   cols_align(
     align = "center",
-    columns = c(establecimientos_2021, plazas_2021,
-                   establecimientos_2022, plazas_2022,
-                   var_ia_est_2022))  %>% 
+    columns = c(establecimientos_2022, plazas_2022,
+                   establecimientos_2023, plazas_2023,
+                   var_ia_est_2023))  %>% 
   tab_source_note(
     source_note = md(
       "**Fuente**: DNMyE en base a datos del PUNA")
   ) %>%
   tab_spanner(
-    label = md("**2021**"),
-    columns = c(establecimientos_2021, plazas_2021)) %>%
-  tab_spanner(
     label = md("**2022**"),
     columns = c(establecimientos_2022, plazas_2022)) %>%
+  tab_spanner(
+    label = md("**2023**"),
+    columns = c(establecimientos_2023, plazas_2023)) %>%
     tab_spanner(
-    label = md("**Var % i.a. 2022/2021**"),
-    columns = c(var_ia_est_2022, var_ia_pla_2022)) %>%
+    label = md("**Var % i.a. 2023/2022**"),
+    columns = c(var_ia_est_2023, var_ia_pla_2023)) %>%
   tab_options(row_group.font.weight = "bold",
               container.height = 600,
               container.overflow.y = T) %>% 
@@ -726,7 +722,7 @@ tabla3
 
 ```{r}
 
-punaAnio <- herramientas::read_file_srv("/srv/DataDNMYE/puna/procesamiento/puna2022.xlsx")
+punaAnio <- herramientas::read_file_srv("/srv/DataDNMYE/puna/procesamiento/puna2023.xlsx")
 
 cadenas <- punaAnio %>% 
   mutate(cadena = case_when(cadena_hotelera == "no corresponde" ~ "No pertenece a cadena hotelera",
@@ -872,7 +868,7 @@ Cabe aclarar que la mayoría de las cadenas hoteleras internacionales se encuent
 
 ```{r puna12}
 
-ranking_cadAnt <- herramientas::read_file_srv("/srv/DataDNMYE/puna/procesamiento/puna2021.xlsx") %>% 
+ranking_cadAnt <- herramientas::read_file_srv("/srv/DataDNMYE/puna/procesamiento/puna2022.xlsx") %>% 
   filter(cadena_hotelera != "no corresponde") %>% 
   group_by(origen_de_la_cadena, cadena_hotelera) %>% 
   summarise(plazas = sum(plazas)) %>% 
@@ -880,7 +876,10 @@ ranking_cadAnt <- herramientas::read_file_srv("/srv/DataDNMYE/puna/procesamiento
   group_by(origen_de_la_cadena) %>% 
   mutate(rank21 = as.integer(rank(-plazas))) %>% 
   ungroup() %>% 
-  select(-plazas)
+  select(-plazas) %>% 
+  mutate(cadena_hotelera = case_when(
+    cadena_hotelera == "amerian" ~ "amerian hoteles",
+    TRUE ~ cadena_hotelera))
 
 ranking_cad <- punaAnio %>% 
   filter(cadena_hotelera != "no corresponde") %>% 
@@ -900,7 +899,7 @@ tabla_nac <- ranking_cad %>%
   select(rank21, rank22, cadena_hotelera, plazas) %>% 
   gt() %>% 
    cols_label(
-    rank21 = md("**Posición 2021**"),
+    rank21 = md("**Posición 2022**"),
     rank22 = md(glue("**Posición {Anio}**")),
     cadena_hotelera = md("**Nombre**"),
     plazas = md("**Plazas**")
@@ -931,7 +930,7 @@ tabla_int <- ranking_cad %>%
   select(rank21, rank22, cadena_hotelera, plazas) %>% 
   gt() %>% 
    cols_label(
-    rank21 = md("**Posición 2021**"),
+    rank21 = md("**Posición 2022**"),
     rank22 = md(glue("**Posición {Anio}**")),
     cadena_hotelera = md("**Nombre**"),
     plazas = md("**Plazas**")

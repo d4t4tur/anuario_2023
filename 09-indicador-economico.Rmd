@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.topcap
 b_indicadores_arg <- read_file_srv("/srv/DataDNMYE/economia2/anuario/indicadores.xlsx", sheet =3)
 b_indicadores_sud <- read_file_srv("/srv/DataDNMYE/economia2/anuario/indicadores.xlsx", sheet =4)
 
-anio_anuario <- "2022"
+anio_anuario <- "2023"
 ```
 
 
@@ -34,7 +34,7 @@ Los indicadores fueron construidos a partir de fuentes estadísticas de la Repú
 
 El desafío es lograr construir series históricas de indicadores macroeconómicos de la actividad del turismo, con el propósito de generar herramientas que faciliten el análisis y permitan así determinar la relevancia económica del turismo en el país y, asimismo, sirva de guía de comparación internacional.
 
-Por tanto, este conjunto de indicadores analiza los consumos turísticos en relación al Producto Interno Bruto (PIB), a las exportaciones e importaciones de bienes y servicios; el valor agregado bruto de hoteles, bares y restaurantes en el PIB, entre otros, para poder aproximar la contribución del turismo a la economía en el periodo 2005-2022.
+Por tanto, este conjunto de indicadores analiza los consumos turísticos en relación al Producto Interno Bruto (PIB), a las exportaciones e importaciones de bienes y servicios; el valor agregado bruto de hoteles, bares y restaurantes en el PIB, entre otros, para poder aproximar la contribución del turismo a la economía en el periodo 2005-2023.
 
 
 [^CEPAL]:[“Proyecto de indicadores Básicos para el análisis del Turismo desde una Perspectiva Económica”](https://www.cepal.org/sites/default/files/events/files/cea3sala_turismo.pdf){target="_blank"} OMT-CEPAL, Marzo 2005
@@ -67,7 +67,7 @@ b_indicadores_sud <- b_indicadores_sud %>%
          consumo_impo_tot_sud=(consumo_emisivo/impo_tot)*100,
          carga_turistas_sud=(tur_no_res/poblacion)*100,
          carga_visitantes_sud= (visit_no_res/poblacion)*100) %>% 
-  filter(anio_sud==2022)
+  filter(anio_sud==anio_anuario)
 
           
 # Etiqueta para ultimo valor de la serie
@@ -97,7 +97,7 @@ funcion_graficos <- function(base,xvar,yvar, serie=T){
               fontface = "bold",
               colour=dnmye_colores(5)
               )+
-    scale_x_discrete(limits = c(2005:2022)
+    scale_x_discrete(limits = c(2005:anio_anuario)
                      )+
     scale_y_continuous(labels = scales::number_format(decimal.mark = ","))+
     theme_minimal() +

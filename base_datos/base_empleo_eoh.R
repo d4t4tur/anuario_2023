@@ -56,7 +56,7 @@ base_eoh_region <- base_eoh %>%
 
 write_file_srv(base_eoh_region,"/srv/DataDNMYE/economia2/anuario/base_eoh_region.csv")
 
-base_eoh_region_2022 <- base_eoh %>%  
+base_eoh_region_2023 <- base_eoh %>%  
   janitor::clean_names() %>% 
   select(anio,mes, region, id_establecimiento, w2, p5_t2, p2_00_ptr) %>% 
   rename(total_pernoctes="p5_t2", puestos_promedio="p2_00_ptr") %>% 
@@ -70,8 +70,8 @@ base_eoh_region_2022 <- base_eoh %>%
              total_pernoctes=sum(total_pernoctes),
              prom_establecimientos= mean(total_establecimientos)) %>% 
   ungroup()%>% 
-  filter(anio==2022)
+  filter(anio==2023)
 
-write_file_srv(base_eoh_region_2022,"/srv/DataDNMYE/economia2/anuario/base_eoh_region_2022.csv")
+write_file_srv(base_eoh_region_2023,"/srv/DataDNMYE/economia2/anuario/base_eoh_region_2023.csv")
 
 

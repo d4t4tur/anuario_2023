@@ -18,11 +18,11 @@ library(ggtext)
 library(glue)
 library(herramientas)
 
-anio_actual <- 2022
+anio_actual <- 2023
 ```
 # **El Turismo en el Mundo** {#turismo-mundo}
 ## Introducción
-Este capítulo presenta las principales estadísticas del turismo a nivel mundial. Con información de la [Organización Mundial del Turismo (OMT)](https://www.unwto.org/es), se incluyen los últimos datos disponibles acerca de las llegadas de turistas internacionales y los ingresos que estos generan en los países de destino, así como los principales países emisores de turistas y aquellos que más gasto generan por sus viajes. Se presentan estadísticas por región mundial y se profundiza en la región América y en América del Sur, en particular.
+Este capítulo presenta las principales estadísticas del turismo a nivel mundial. Con información de la [ONU Turismo](https://www.unwto.org/es), se incluyen los últimos datos disponibles acerca de las llegadas de turistas internacionales y los ingresos que estos generan en los países de destino, así como los principales países emisores de turistas y aquellos que más gasto generan por sus viajes. Se presentan estadísticas por región mundial y se profundiza en la región América y en América del Sur, en particular.
 
 Es importante destacar que la información relativa al turismo internacional se presenta de distintas formas en los países. A modo de ejemplo, algunos 
 países informan la cantidad de visitantes que visitan el país, es decir, se incluyen aquellas personas que pasan una noche en él (turistas) y aquellas que no lo hacen (excursionistas). Otros, en cambio, solo miden la cantidad de turistas (visitantes con pernocte). Un tercer grupo publica solamente estadísticas sobre aquellos turistas que visitan establecimientos turísticos colectivos.
@@ -33,18 +33,18 @@ Asimismo, es común encontrar, en las estadísticas por país, datos faltantes d
 ## Llegadas de turistas internacionales
 
 ```{r}
-llegadas_regiones <- read_file_srv("/economia2/anuario/llegadas turistas internacionales.xlsx",skip=1,sheet=2) %>% 
+llegadas_regiones <- read_file_srv("/economia2/anuario/llegadas turistas internacionales_OCT_24.xlsx",skip=1,sheet=2) %>% 
   rename(region = 1) %>% 
   mutate(region = ifelse(region == "Américas","América",region))
-ingresos_regiones <- read_file_srv("/economia2/anuario/ingresos turistas internacionales.xlsx",skip=1,sheet=2) %>% 
+ingresos_regiones <- read_file_srv("/economia2/anuario/ingresos turistas internacionales_OCT_24.xlsx",skip=1,sheet=2) %>% 
   rename(region = 1) %>% 
   mutate(region = ifelse(region == "Américas","América",region))
 
-llegadas_subregiones <- read_file_srv("/economia2/anuario/llegadas turistas internacionales.xlsx",skip=1,sheet=3) %>% 
+llegadas_subregiones <- read_file_srv("/economia2/anuario/llegadas turistas internacionales_OCT_24.xlsx",skip=1,sheet=3) %>% 
   rename(subregion=1) %>% 
   mutate(region = ifelse(region == "Américas","América",region))
 
-ingresos_subregiones <-  read_file_srv("/economia2/anuario/ingresos turistas internacionales.xlsx",skip=1,sheet=3) %>% 
+ingresos_subregiones <-  read_file_srv("/economia2/anuario/ingresos turistas internacionales_OCT_24.xlsx",skip=1,sheet=3) %>% 
   rename(subregion=1) %>% 
   mutate(region = ifelse(region == "Américas","América",region))
 
@@ -133,7 +133,7 @@ data_llegadas_mundo %>%
    scale_x_continuous(breaks = seq(anio_actual-15,anio_actual,by=5),
                      labels = seq(anio_actual-15,anio_actual,by=5))+
   facet_wrap(~etiqueta,ncol=1,scales="free")+
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a Organización Mundial del Turismo (OMT)") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="none")
@@ -155,7 +155,7 @@ llegadas_regiones_long %>%
    scale_x_continuous(breaks = seq(anio_actual-15,anio_actual,by=5),
                      labels = seq(anio_actual-15,anio_actual,by=5))+
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="bottom")
@@ -205,7 +205,7 @@ data_tabla_subregion <- llegadas_subregion_long %>%
   filter(anio == anio_actual) %>% 
   left_join( llegadas_subregiones %>% 
   filter(!is.na(`2000`) & subregion != "Mundo") %>%
-    select(subregion,`2000`,`2005`,`2010`,`2015`,`2021`,`2022`) %>% mutate_at(vars(-subregion),as.numeric))
+    select(subregion,`2000`,`2005`,`2010`,`2015`,`2022`,`2023`) %>% mutate_at(vars(-subregion),as.numeric))
 
 ```
 
@@ -213,7 +213,7 @@ A continuación se presenta una tabla con las llegadas de turistas internacional
 
 ```{r tabla-omt-subregion}
 tabla_omt_subregion <- data_tabla_subregion %>% 
-  select(region,subregion,`2000`,`2005`,`2010`,`2015`,`2021`,llegadas,var_i_a,var_2019,part) %>% 
+  select(region,subregion,`2000`,`2005`,`2010`,`2015`,`2022`,llegadas,var_i_a,var_2019,part) %>% 
   group_by(region) %>% 
   gt() %>% 
   tab_caption("Llegadas de turistas internacionales por subregión. En millones.") %>% 
@@ -235,7 +235,7 @@ tabla_omt_subregion <- data_tabla_subregion %>%
   # ) %>%
  tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   ) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -271,7 +271,7 @@ ranking_ultimo %>%
              ) +
   scale_y_continuous(labels = scales::number_format(scale = 1/1e+6))+
   scale_fill_dnmye(discrete = "F") +
-  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base a ONU Turismo") +
   theme_minimal() +
   theme(legend.position = "none",
         plot.caption  = element_markdown())
@@ -287,42 +287,42 @@ data_tabla_paises <- llegadas_paises %>%
   mutate(var_i_a = valor/lag(valor,1)-1,
          var_2019 = valor/valor[anio==2019]-1) %>% 
   ungroup() %>% 
-  filter(anio %in% c(2000,2005,2010,2015,2021,anio_actual)) %>% 
+  filter(anio %in% c(2000,2005,2010,2015,2022,anio_actual)) %>% 
   select(nombre,anio,valor,var_i_a,var_2019) %>% 
   pivot_wider(names_from = anio,values_from = c(valor,var_i_a,var_2019))
 ```
 
-Las llegadas de turistas internacionales en **`r data_tabla_paises %>% arrange(-valor_2022) %>% slice(1) %>% pull(nombre)`** `r  ifelse(data_tabla_paises %>% arrange(-valor_2022) %>% slice(1) %>% pull(var_i_a_2022) >0,"crecieron",cayeron)` `r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(1) %>% pull(var_i_a_2022) %>% abs() *100,1 )`%. En comparación con 2019, la variación fue de `r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(1) %>% pull(var_2019_2022)  *100,1 )`%. El siguiente país en magnitud fue **`r data_tabla_paises %>% arrange(-valor_2022) %>% slice(2) %>% pull(nombre)`**, que `r  ifelse(data_tabla_paises %>% arrange(-valor_2022) %>% slice(2) %>% pull(var_i_a_2022) >0,"aumentó","disminuyó")` sus llegadas un `r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(2) %>% pull(var_i_a_2022) %>% abs() *100,1 )`% con respecto a `r as.character(anio_actual-1)` (`r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(2) %>% pull(var_2019_2022)  *100,1 )`% vs. 2019). Por su parte, las llegadas a **`r data_tabla_paises %>% arrange(-valor_2022) %>% slice(3) %>% pull(nombre)`** `r  ifelse(data_tabla_paises %>% arrange(-valor_2022) %>% slice(3) %>% pull(var_i_a_2022) >0,"se elevaron","se contrajeron")` un `r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(3) %>% pull(var_i_a_2022) %>% abs() *100,1 )`% (`r round(data_tabla_paises %>% arrange(-valor_2022) %>% slice(3) %>% pull(var_2019_2022)  *100,1 )`% vs. 2019).
+Las llegadas de turistas internacionales en **`r data_tabla_paises %>% arrange(-valor_2023) %>% slice(1) %>% pull(nombre)`** `r  ifelse(data_tabla_paises %>% arrange(-valor_2023) %>% slice(1) %>% pull(var_i_a_2023) >0,"crecieron",cayeron)` `r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(1) %>% pull(var_i_a_2023) %>% abs() *100,1 )`%. En comparación con 2019, la variación fue de `r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(1) %>% pull(var_2019_2023)  *100,1 )`%. El siguiente país en magnitud fue **`r data_tabla_paises %>% arrange(-valor_2023) %>% slice(2) %>% pull(nombre)`**, que `r  ifelse(data_tabla_paises %>% arrange(-valor_2023) %>% slice(2) %>% pull(var_i_a_2023) >0,"aumentó","disminuyó")` sus llegadas un `r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(2) %>% pull(var_i_a_2023) %>% abs() *100,1 )`% con respecto a `r as.character(anio_actual-1)` (`r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(2) %>% pull(var_2019_2023)  *100,1 )`% vs. 2019). Por su parte, las llegadas a **`r data_tabla_paises %>% arrange(-valor_2023) %>% slice(3) %>% pull(nombre)`** `r  ifelse(data_tabla_paises %>% arrange(-valor_2023) %>% slice(3) %>% pull(var_i_a_2023) >0,"se elevaron","se contrajeron")` un `r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(3) %>% pull(var_i_a_2023) %>% abs() *100,1 )`% (`r round(data_tabla_paises %>% arrange(-valor_2023) %>% slice(3) %>% pull(var_2019_2023)  *100,1 )`% vs. 2019).
 
 
 ```{r tabla-omt-paises, fig.cap=""}
 tabla_llegadas_paises <- data_tabla_paises %>%
-  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2021,valor_2022,var_i_a_2022,var_2019_2022) %>% 
+  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2022,valor_2023,var_i_a_2023,var_2019_2023) %>% 
   mutate_at(vars(-nombre),as.numeric) %>% 
-  arrange(-valor_2022) %>% 
+  arrange(-valor_2023) %>% 
   slice(1:20) %>% 
   gt() %>%
-  # fmt_number(columns=c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2021),decimals = 1,dec_mark = ",") %>% 
+  # fmt_number(columns=c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2022),decimals = 1,dec_mark = ",") %>% 
   gt_theme_dnmye() %>% 
   tab_caption("Llegadas de turistas internacionales. En millones. Primeros 20 países.") %>% 
-  tab_spanner(columns = c(valor_2022,var_i_a_2022,var_2019_2022),
+  tab_spanner(columns = c(valor_2023,var_i_a_2023,var_2019_2023),
                label = md(glue("**{anio_actual}**"))) %>% 
   cols_label(nombre = md(""),
              valor_2000 = md("2000"),
              valor_2005 = md("2005"),
              valor_2010  = md("2010"),
              valor_2015 = md("2015"),
-             valor_2021 = md("2021"),
-             valor_2022 = md("Llegadas"),
-             var_i_a_2022 = md("Var. i.a. (%)"),
-             var_2019_2022 = md("Var. vs. 2019 (%)")) %>%
+             valor_2022 = md("2022"),
+             valor_2023 = md("Llegadas"),
+             var_i_a_2023 = md("Var. i.a. (%)"),
+             var_2019_2023 = md("Var. vs. 2019 (%)")) %>%
   tab_style(
     style = cell_text(weight =  "bold"),
     locations = cells_row_groups()
   ) %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -337,7 +337,7 @@ data_graf_llegadas_paises <-
     mutate(valor = as.numeric(valor),
          anio = as.numeric(anio)) %>% 
   filter(indicador == "Overnights visitors (tourists)" & anio > 2004) %>%
- filter(nombre %in% ( data_tabla_paises %>% arrange(-valor_2022) %>% slice(1:10) %>% pull(nombre))) 
+ filter(nombre %in% ( data_tabla_paises %>% arrange(-valor_2023) %>% slice(1:10) %>% pull(nombre))) 
 ```
 
 ```{r omt-llegadas-paises-serie, fig.cap=glue("Llegadas de turistas internacionales. En millones. Primeros 10 países. Años {min(data_graf_llegadas_paises$anio)}-{max(data_graf_llegadas_paises$anio)}.")}
@@ -385,7 +385,7 @@ data_ingresos_mundo %>%
                      limits = c(NA,NA),
                      expand=c(0,50))+
   facet_wrap(~etiqueta,ncol=1,scales="free")+
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="none")
@@ -408,7 +408,7 @@ ingresos_regiones_long %>%
    scale_x_continuous(breaks = seq(anio_actual-15,anio_actual,by=5),
                      labels = seq(anio_actual-15,anio_actual,by=5))+
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="bottom")
@@ -432,7 +432,7 @@ data_tabla_ingresos_subregion <- ingresos_subregion_long %>%
   filter(anio == anio_actual) %>% 
   left_join( ingresos_subregiones %>% 
   filter(!is.na(`2000`) & subregion != "Mundo") %>%
-    select(subregion,`2000`,`2005`,`2010`,`2015`,`2021`,`2022`) %>% mutate_at(vars(-subregion),as.numeric))
+    select(subregion,`2000`,`2005`,`2010`,`2015`,`2022`,`2023`) %>% mutate_at(vars(-subregion),as.numeric))
 
 
 ```
@@ -444,7 +444,7 @@ A continuación se presenta una tabla con los ingresos económicos por turismo i
 ```{r tabla-omt-ingresos-subregion}
 
 tabla_ingresos_omt_subregion <- data_tabla_ingresos_subregion %>% 
-  select(region,subregion,`2000`,`2005`,`2010`,`2015`,`2021`,ingresos,var_i_a,var_2019,part) %>% 
+  select(region,subregion,`2000`,`2005`,`2010`,`2015`,`2022`,ingresos,var_i_a,var_2019,part) %>% 
   group_by(region) %>% 
   gt() %>% 
    gt_theme_dnmye()%>% 
@@ -467,7 +467,7 @@ tabla_ingresos_omt_subregion <- data_tabla_ingresos_subregion %>%
   ) %>%
  tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -501,7 +501,7 @@ ranking_ingresos_ultimo %>%
              ) +
   scale_y_continuous(labels = scales::number_format(scale = 1/1e+6))+
   scale_fill_dnmye(discrete = "F") +
-  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base Organización Mundial del Turismo (OMT)") +
+  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base ONU Turismo") +
   theme_minimal() +
   theme(legend.position = "none",
         plot.caption  = element_markdown())
@@ -520,38 +520,38 @@ data_tabla_ingresos_paises <- ingresos_paises %>%
   mutate(var_i_a = valor/lag(valor,1)-1,
          var_2019 = valor/valor[anio==2019]-1) %>% 
   ungroup() %>% 
-  filter(anio %in% c(2000,2005,2010,2015,2021,anio_actual)) %>% 
+  filter(anio %in% c(2000,2005,2010,2015,2022,anio_actual)) %>% 
   select(nombre,anio,valor,var_i_a,var_2019) %>% 
   pivot_wider(names_from = anio,values_from = c(valor,var_i_a,var_2019)) 
   
 tabla_ingresos_paises <- data_tabla_ingresos_paises %>%
-  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2021,valor_2022,var_i_a_2022,var_2019_2022) %>% 
+  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2022,valor_2023,var_i_a_2023,var_2019_2023) %>% 
   mutate_at(vars(-nombre),as.numeric) %>% 
-  arrange(-valor_2022) %>% 
+  arrange(-valor_2023) %>% 
   slice(1:20) %>% 
   gt() %>% 
-  # fmt_number(columns = c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2021),
+  # fmt_number(columns = c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2022),
   #            decimals = 1,sep_mark = ".",dec_mark=",") %>% 
   gt_theme_dnmye() %>% 
   tab_caption("Ingresos económicos por turismo internacional (viajes). En miles de millones de dólares. Primeros 20 países.") %>% 
-  tab_spanner(columns = c(valor_2022,var_i_a_2022,var_2019_2022),
+  tab_spanner(columns = c(valor_2023,var_i_a_2023,var_2019_2023),
                label = md(glue("**{anio_actual}**"))) %>% 
   cols_label(nombre = md(""),
              valor_2000 = md("2000"),
              valor_2005 = md("2005"),
              valor_2010  = md("2010"),
              valor_2015 = md("2015"),
-             valor_2021 = md("2021"),
-             valor_2022 = md("Ingresos"),
-             var_i_a_2022 = md("Var. i.a. (%)"),
-             var_2019_2022 = md("Var. vs. 2019 (%)")) %>%
+             valor_2022 = md("2022"),
+             valor_2023 = md("Ingresos"),
+             var_i_a_2023 = md("Var. i.a. (%)"),
+             var_2019_2023 = md("Var. vs. 2019 (%)")) %>%
   tab_style(
     style = cell_text(weight =  "bold"),
     locations = cells_row_groups()
   ) %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -567,7 +567,7 @@ data_graf_ingresos_paises <-   ingresos_paises %>%
     mutate(valor = as.numeric(valor),
          anio = as.numeric(anio)) %>% 
   filter(indicador == "Travel" & anio > 2004) %>%
- filter(nombre %in% (data_tabla_ingresos_paises %>% arrange(-valor_2022) %>% slice(1:10) %>% pull(nombre))) 
+ filter(nombre %in% (data_tabla_ingresos_paises %>% arrange(-valor_2023) %>% slice(1:10) %>% pull(nombre))) 
 
 
   ggplot(data_graf_ingresos_paises,aes(x=anio,y=valor,color=nombre,group=nombre))+
@@ -612,7 +612,7 @@ ranking_egresos_ultimo %>%
              ) +
   scale_y_continuous(labels = scales::number_format(scale = 1/1e+6))+
   scale_fill_dnmye(discrete = "F") +
-  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "**Fuente:** DNMyE en base a ONU Turismo") +
   theme_minimal() +
   theme(legend.position = "none",
         plot.caption  = element_markdown())
@@ -628,38 +628,38 @@ data_tabla_egresos_paises <- egresos_paises %>%
   mutate(var_i_a = valor/lag(valor,1)-1,
          var_2019 = valor/valor[anio==2019]-1) %>% 
   ungroup() %>% 
-  filter(anio %in% c(2000,2005,2010,2015,2021,anio_actual)) %>% 
+  filter(anio %in% c(2000,2005,2010,2015,2022,anio_actual)) %>% 
   select(nombre,anio,valor,var_i_a,var_2019) %>% 
   pivot_wider(names_from = anio,values_from = c(valor,var_i_a,var_2019)) 
   
 tabla_egresos_paises <- data_tabla_egresos_paises %>%
-  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2021,valor_2022,var_i_a_2022,var_2019_2022) %>% 
+  select(nombre,valor_2000,valor_2005,valor_2010,valor_2015,valor_2022,valor_2023,var_i_a_2023,var_2019_2023) %>% 
   mutate_at(vars(-nombre),as.numeric) %>% 
-  arrange(-valor_2022) %>% 
+  arrange(-valor_2023) %>% 
   slice(1:20) %>% 
   gt() %>% 
-  # fmt_number(columns = c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2021),
+  # fmt_number(columns = c(valor_2000,valor_2005,valor_2010,valor_2015,valor_2020,valor_2022),
   #            decimals = 1,sep_mark=".",dec_mark = ",") %>% 
   tab_caption("Egresos económicos por turismo internacional (viajes). En miles de millones de dólares. Primeros 20 países.") %>% 
   gt_theme_dnmye() %>% 
-  tab_spanner(columns = c(valor_2022,var_i_a_2022,var_2019_2022),
+  tab_spanner(columns = c(valor_2022,var_i_a_2023,var_2019_2023),
                label = md(glue("**{anio_actual}**"))) %>% 
   cols_label(nombre = md(""),
              valor_2000 = md("2000"),
              valor_2005 = md("2005"),
              valor_2010  = md("2010"),
              valor_2015 = md("2015"),
-             valor_2021 = md("2021"),
-             valor_2022 = md("Egresos"),
-             var_i_a_2022 = md("Var. i.a. (%)"),
-             var_2019_2022 = md("Var. vs. 2019 (%)")) %>%
+             valor_2022 = md("2022"),
+             valor_2023 = md("Egresos"),
+             var_i_a_2023 = md("Var. i.a. (%)"),
+             var_2019_2023 = md("Var. vs. 2019 (%)")) %>%
   tab_style(
     style = cell_text(weight =  "bold"),
     locations = cells_row_groups()
   ) %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -677,7 +677,7 @@ data_graf_egresos_paises <-  egresos_paises %>%
     mutate(valor = as.numeric(valor),
          anio = as.numeric(anio)) %>% 
   filter(indicador == "Travel" & anio > 2004) %>%
- filter(nombre %in% (data_tabla_egresos_paises %>% arrange(-valor_2022) %>% slice(1:10) %>% pull(nombre))) 
+ filter(nombre %in% (data_tabla_egresos_paises %>% arrange(-valor_2023) %>% slice(1:10) %>% pull(nombre))) 
 
 
   ggplot(data_graf_egresos_paises,aes(x=anio,y=valor,color=nombre,group=nombre))+
@@ -716,7 +716,7 @@ llegadas_subregion_long %>%
   scale_fill_dnmye() +
   scale_x_continuous(breaks = seq(anio_actual-15,anio_actual,by=5),
                      labels = seq(anio_actual-15,anio_actual,by=5))+
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="bottom")
@@ -729,7 +729,7 @@ data_tabla_america <- llegadas_america_long %>%
   mutate(var_i_a = llegadas/lag(llegadas,1)-1,
          var_2019 = llegadas/llegadas[anio==2019]-1) %>% 
   ungroup() %>% 
-  filter(anio %in% c(2000,2005,2010,2015,2021,anio_actual)) %>% 
+  filter(anio %in% c(2000,2005,2010,2015,2022,anio_actual)) %>% 
   select(pais=region,anio,llegadas,var_i_a,var_2019) %>% 
   pivot_wider(names_from = anio,values_from = c(llegadas,var_i_a,var_2019))
 ```
@@ -738,31 +738,31 @@ En América, el país que recibió más turistas en `r as.character(anio_actual)
 
 ```{r  tabla-omt-america}
 tabla_llegadas_america <- data_tabla_america %>%
-  select(pais,llegadas_2005,llegadas_2010,llegadas_2015,llegadas_2021,llegadas_2022,var_i_a_2022,var_2019_2022) %>% 
+  select(pais,llegadas_2005,llegadas_2010,llegadas_2015,llegadas_2022,llegadas_2023,var_i_a_2023,var_2019_2023) %>% 
   mutate_at(vars(-pais),as.numeric) %>% 
-  arrange(-llegadas_2022) %>% 
+  arrange(-llegadas_2023) %>% 
   slice(1:20) %>% 
   gt() %>% 
-  # fmt_number(columns=c(llegadas_2005,llegadas_2010,llegadas_2015,llegadas_2020,llegadas_2021),decimals = 1,dec_mark = ",") %>% 
+  # fmt_number(columns=c(llegadas_2005,llegadas_2010,llegadas_2015,llegadas_2020,llegadas_2022),decimals = 1,dec_mark = ",") %>% 
   gt_theme_dnmye() %>% 
   tab_caption("América: llegadas de turistas internacionales. En millones. Primeros 20 países.") %>% 
-  tab_spanner(columns = c(llegadas_2022,var_i_a_2022,var_2019_2022),
+  tab_spanner(columns = c(llegadas_2023,var_i_a_2023,var_2019_2023),
                label = md(glue("**{anio_actual}**"))) %>% 
   cols_label(pais = md(""),
              llegadas_2005 = md("2005"),
              llegadas_2010  = md("2010"),
              llegadas_2015 = md("2015"),
-             llegadas_2021 = md("2021"),
-             llegadas_2022 = md("Llegadas"),
-             var_i_a_2022 = md("Var. i.a. (%)"),
-             var_2019_2022 = md("Var. vs. 2019 (%)")) %>%
+             llegadas_2022 = md("2022"),
+             llegadas_2023 = md("Llegadas"),
+             var_i_a_2023 = md("Var. i.a. (%)"),
+             var_2019_2023 = md("Var. vs. 2019 (%)")) %>%
   tab_style(
     style = cell_text(weight =  "bold"),
     locations = cells_row_groups()
   ) %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
@@ -826,7 +826,7 @@ ingresos_subregion_long %>%
   scale_x_continuous(breaks = seq(anio_actual-15,anio_actual,by=5),
                      labels = seq(anio_actual-15,anio_actual,by=5))+
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a OMT") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a ONU Turismo") +
   theme_minimal() +
   coord_cartesian(clip = "off")+
   theme(legend.position="bottom")
@@ -839,7 +839,7 @@ data_tabla_america_ingresos <- ingresos_america_long %>%
   mutate(var_i_a = ingresos/lag(ingresos)-1,
          var_2019 = ingresos/ingresos[anio==2019]-1) %>% 
   ungroup() %>% 
-  filter(anio %in% c(2000,2005,2010,2015,2021,anio_actual)) %>% 
+  filter(anio %in% c(2000,2005,2010,2015,2022,anio_actual)) %>% 
   select(pais,anio,ingresos,var_i_a,var_2019) %>% 
   pivot_wider(names_from = anio,values_from = c(ingresos,var_i_a,var_2019)) 
 ```
@@ -848,32 +848,32 @@ El país del continente americano con mayor cantidad de ingresos económicos por
 
 ```{r ingresos-america-paises}
 tabla_ingresos_america <- data_tabla_america_ingresos %>%
-  select(pais,ingresos_2005,ingresos_2010,ingresos_2015,ingresos_2021,ingresos_2022,var_i_a_2022,var_2019_2022) %>% 
+  select(pais,ingresos_2005,ingresos_2010,ingresos_2015,ingresos_2022,ingresos_2023,var_i_a_2023,var_2019_2023) %>% 
   mutate_at(vars(-pais),as.numeric) %>% 
   arrange(-ingresos_2022) %>% 
   slice(1:20) %>% 
   gt() %>% 
-  # fmt_percent(columns=c(var_i_a_2021,var_2019_2021),decimals = 1,dec_mark = ",") %>% 
+  # fmt_percent(columns=c(var_i_a_2022,var_2019_2022),decimals = 1,dec_mark = ",") %>% 
   gt_theme_dnmye() %>% 
-  fmt_number( columns = c(ingresos_2005,ingresos_2010,ingresos_2015,ingresos_2021,ingresos_2022), decimals = 0, dec_mark = ",", sep_mark = ".") %>% 
+  fmt_number( columns = c(ingresos_2005,ingresos_2010,ingresos_2015,ingresos_2022,ingresos_2023), decimals = 0, dec_mark = ",", sep_mark = ".") %>% 
   tab_caption("América: ingresos por turismo internacional. En millones de dólares. Primeros 20 países.") %>% 
-  tab_spanner(columns = c(ingresos_2022,var_i_a_2022,var_2019_2022),
+  tab_spanner(columns = c(ingresos_2023,var_i_a_2023,var_2019_2023),
                label = md(glue("**{anio_actual}**"))) %>% 
   cols_label(pais = md(""),
              ingresos_2005 = md("2005"),
              ingresos_2010  = md("2010"),
              ingresos_2015 = md("2015"),
-             ingresos_2021 = md("2021"),
-             ingresos_2022 = md("Ingresos"),
-             var_i_a_2022 = md("Var. i.a. (%)"),
-             var_2019_2022 = md("Var. vs. 2019 (%)")) %>%
+             ingresos_2022 = md("2022"),
+             ingresos_2023 = md("Ingresos"),
+             var_i_a_2023 = md("Var. i.a. (%)"),
+             var_2019_2023 = md("Var. vs. 2019 (%)")) %>%
   tab_style(
     style = cell_text(weight =  "bold"),
     locations = cells_row_groups()
   ) %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a OMT")
+      "**Fuente**: DNMyE en base a ONU Turismo")
   )  %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)

@@ -32,8 +32,8 @@ options(scipen = 99)
 
 Anio <- 2023 #puna
 anio_texto_puna <- "2023" #puna
-anio_ref <- 2022 #eoh
-anio_texto <- "2022" #eoh
+anio_ref <- 2023 #eoh
+anio_texto <- "2023" #eoh
 
 ```
 
@@ -55,7 +55,7 @@ El objetivo del presente capítulo es **realizar una descripción cuantitativa y
 
 ## Oferta de Alojamiento Turístico Colectivo
 
-La siguiente sección se elaboró con los datos extraídos del Padrón Único Nacional de Alojamiento (PUNA) que elabora anualmente la Dirección Nacional de Mercados y Estadística (DNMyE) a partir de la información aportada por los organismos de turismo provinciales y municipales y el INDEC.
+La siguiente sección se elaboró con los datos extraídos del Padrón Único Nacional de Alojamiento (PUNA) que elabora anualmente la Dirección de Mercados y Estadística (DMyE) a partir de la información aportada por los organismos de turismo provinciales y municipales y el INDEC.
 
 ### Evolución histórica de la oferta de alojamientos hoteleros, parahoteleros y otros colectivos 
 
@@ -74,7 +74,7 @@ puna1 <- puna %>%
   geom_point(aes(anio, value, color = name)) +
   scale_color_dnmye() +
   scale_x_continuous(breaks = seq(min(puna$anio), max(puna$anio))) +
-  labs(x = "", y = "", caption = "Fuente: DNMyE en base a datos del PUNA") +
+  labs(x = "", y = "", caption = "Fuente: DMyE en base a datos del PUNA") +
   facet_wrap(~name, scales = "free", ncol = 1) +
   theme(legend.position = "none",
         panel.background = element_rect(fill = "white"),
@@ -121,20 +121,20 @@ data_graph2 <- puna %>%
   mutate(var_ia = establecimientos/lag(establecimientos, 1)-1) %>% 
   ungroup() %>%
   mutate(clasificacion_mintur=case_when(clasificacion_mintur=="Conjunto de unidades turisticas"~"Conjunto de unidades turísticas",
-                                      clasificacion_mintur=="Complejo turistico"~"Complejo turístico",
-                                      TRUE~clasificacion_mintur))
+                                        clasificacion_mintur=="Complejo turistico"~"Complejo turístico",
+                                        TRUE~clasificacion_mintur))
 
 data_graph2_fraseo <- data_graph2
 
 data_graph2 <- data_graph2  %>%  
   mutate(clasificacion_mintur = fct_reorder(clasificacion_mintur, establecimientos),
          anio = as.factor(anio))  
-  
+
 
 puna2 <- data_graph2 %>% 
   ggplot() +
   geom_col(aes(clasificacion_mintur, establecimientos, group = anio,  fill = anio),
-          position = position_dodge(), width = 0.8) +
+           position = position_dodge(), width = 0.8) +
   geom_label(data = data_graph2[data_graph2$anio == Anio & !is.na(data_graph2$var_ia), ], 
              aes(clasificacion_mintur, establecimientos, 
                  label = paste0(round(var_ia*100,1), "%")),
@@ -143,7 +143,7 @@ puna2 <- data_graph2 %>%
   coord_flip() +
   scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a datos del PUNA") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DMyEen base a datos del PUNA") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -200,15 +200,15 @@ data_graph3 <- puna %>%
 
 puna3 <- ggplot(data_graph3, aes(str_wrap(region, 10), value)) +
   geom_col(aes(fill = name), 
-          position = position_dodge()) +
+           position = position_dodge()) +
   geom_label(aes(group = name, label = paste0(round(value*100,1), "%")),
              size = 3, label.size = 0.2,
              label.padding =  unit(0.15, "lines"),position = position_dodge(width = 1),
              vjust = -0.2
-             ) +
+  ) +
   scale_y_percent(expand = expansion(mult = c(0.1, 0.2))) +
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a datos del PUNA") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DMyEen base a datos del PUNA") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -269,31 +269,31 @@ data_cuadro1 <- puna %>%
   group_by(clasificacion_mintur) %>% 
   mutate(var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          var_ia_pla = plazas/lag(plazas, 1)-1
-         ) %>% 
+  ) %>% 
   ungroup() 
 
 totales <- data_cuadro1 %>% 
   group_by(anio, tipo) %>% 
   summarise(establecimientos = sum(establecimientos),
-         plazas = sum(plazas)) %>% 
+            plazas = sum(plazas)) %>% 
   ungroup() %>% 
   group_by(tipo) %>% 
   mutate(var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          clasificacion_mintur = "Total",
          var_ia_pla = plazas/lag(plazas, 1)-1
-         ) %>% 
+  ) %>% 
   ungroup() 
 
 total <- data_cuadro1 %>% 
   group_by(anio) %>% 
   summarise(establecimientos = sum(establecimientos),
-         plazas = sum(plazas)) %>% 
+            plazas = sum(plazas)) %>% 
   ungroup() %>% 
   mutate(tipo = "",
          var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          clasificacion_mintur = "Total",
          var_ia_pla = plazas/lag(plazas, 1)-1
-         )
+  )
 
 data_cuadro1 <- rbind(data_cuadro1, totales, total) %>% 
   pivot_wider(names_from = "anio", 
@@ -305,7 +305,7 @@ tabla1 <- data_cuadro1 %>%
   arrange(match(tipo, c("","Hoteleros","Parahoteleros","Otros colectivos")),
           match(clasificacion_mintur, "Total")) %>% 
   gt(groupname_col = "tipo") %>% 
-   cols_label(
+  cols_label(
     tipo = md(""),
     clasificacion_mintur = md("**Clasificación**"),
     establecimientos_2015 = md("**Establecimientos**"),
@@ -315,17 +315,17 @@ tabla1 <- data_cuadro1 %>%
     var_ia_est_2023 = md("**Establecimientos**"),
     var_ia_pla_2023 = md("**Plazas**")
   ) %>% 
-    gt_theme_dnmye(var_total = clasificacion_mintur) %>% 
+  gt_theme_dnmye(var_total = clasificacion_mintur) %>% 
   fmt_number(columns = c(3,4,5,6), decimals = 0, dec_mark = ",", sep_mark = ".") %>% 
   fmt_percent(columns = c(7,8), decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   cols_align(
     align = "center",
     columns = c(establecimientos_2015, plazas_2015,
-                   establecimientos_2023, plazas_2023,
-                   var_ia_est_2023, var_ia_pla_2023))  %>% 
+                establecimientos_2023, plazas_2023,
+                var_ia_est_2023, var_ia_pla_2023))  %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a datos del PUNA")
+      "**Fuente**: DMyEen base a datos del PUNA")
   )  %>%
   tab_spanner(
     label = md("**2015**"),
@@ -333,7 +333,7 @@ tabla1 <- data_cuadro1 %>%
   tab_spanner(
     label = md("**2023**"),
     columns = c(establecimientos_2023, plazas_2023)) %>%
-    tab_spanner(
+  tab_spanner(
     label = md("**Var % i.a. 2023/2015**"),
     columns = c(var_ia_est_2023, var_ia_pla_2023)) %>%
   tab_options(row_group.font.weight = "bold",
@@ -360,31 +360,31 @@ data_cuadro2 <- puna %>%
   group_by(clasificacion_mintur) %>% 
   mutate(var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          var_ia_pla = plazas/lag(plazas, 1)-1
-         ) %>% 
+  ) %>% 
   ungroup() 
 
 totales <- data_cuadro2 %>% 
   group_by(anio, tipo) %>% 
   summarise(establecimientos = sum(establecimientos),
-         plazas = sum(plazas)) %>% 
+            plazas = sum(plazas)) %>% 
   ungroup() %>% 
   group_by(tipo) %>% 
   mutate(var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          clasificacion_mintur = "Total",
          var_ia_pla = plazas/lag(plazas, 1)-1
-         ) %>% 
+  ) %>% 
   ungroup() 
 
 total <- data_cuadro2 %>% 
   group_by(anio) %>% 
   summarise(establecimientos = sum(establecimientos),
-         plazas = sum(plazas)) %>% 
+            plazas = sum(plazas)) %>% 
   ungroup() %>% 
   mutate(tipo = "",
          var_ia_est = establecimientos/lag(establecimientos, 1)-1,
          clasificacion_mintur = "Total",
          var_ia_pla = plazas/lag(plazas, 1)-1
-         )
+  )
 
 data_cuadro2 <- rbind(total, data_cuadro2, totales) %>% 
   pivot_wider(names_from = "anio", 
@@ -396,7 +396,7 @@ tabla2 <- data_cuadro2 %>%
   arrange(match(tipo, c("","Hoteleros","Parahoteleros","Otros colectivos")),
           match(clasificacion_mintur, "Total")) %>% 
   gt(groupname_col = "tipo") %>% 
-   cols_label(
+  cols_label(
     tipo = md(""),
     clasificacion_mintur = md("**Clasificación**"),
     establecimientos_2022 = md("**Establecimientos**"),
@@ -412,11 +412,11 @@ tabla2 <- data_cuadro2 %>%
   cols_align(
     align = "center",
     columns = c(establecimientos_2022, plazas_2022,
-                   establecimientos_2023, plazas_2023,
-                   var_ia_est_2023))  %>% 
+                establecimientos_2023, plazas_2023,
+                var_ia_est_2023))  %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a datos del PUNA")
+      "**Fuente**: DMyE en base a datos del PUNA")
   ) %>%
   tab_spanner(
     label = md("**2022**"),
@@ -424,7 +424,7 @@ tabla2 <- data_cuadro2 %>%
   tab_spanner(
     label = md("**2023**"),
     columns = c(establecimientos_2023, plazas_2023)) %>%
-    tab_spanner(
+  tab_spanner(
     label = md("**Var % i.a. 2023/2022**"),
     columns = c(var_ia_est_2023, var_ia_pla_2023)) %>%
   tab_options(row_group.font.weight = "bold",
@@ -433,7 +433,7 @@ tabla2 <- data_cuadro2 %>%
   tab_caption(caption = glue("Oferta de establecimientos colectivos y plazas, por tipo de alojamiento, según categoría. Total país. Años {Anio-1}-{Anio}.")) %>% 
   sub_missing(columns = everything(),
               missing_text = "///") %>% 
-    sub_zero(everything(), zero_text = "///")
+  sub_zero(everything(), zero_text = "///")
 
 tabla2
 ```
@@ -462,15 +462,15 @@ data_graph4 <- puna %>%
 
 puna6 <- ggplot(data_graph4, aes(str_wrap(region, 10), value)) +
   geom_col(aes(fill = name), 
-          position = position_dodge()) +
+           position = position_dodge()) +
   geom_label(aes(group = name, label = paste0(round(value*100,1), "%")),
              size = 3, label.size = 0.2,
              label.padding =  unit(0.15, "lines"),position = position_dodge(width = 1),
              vjust = -0.2
-             ) +
+  ) +
   scale_y_percent(expand = expansion(mult = c(0.1, 0.2))) +
   scale_fill_dnmye() +
-  labs(fill = "", x = "", y = "", caption = "Fuente: DNMyE en base a datos del PUNA") +
+  labs(fill = "", x = "", y = "", caption = "Fuente: DMyE en base a datos del PUNA") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -524,12 +524,12 @@ data_graph5 <- puna %>%
   ungroup() %>% 
   pivot_longer(c("establecimientos","plazas"))%>% 
   mutate(provincia=case_when(provincia=="Ciudad Autónoma de Buenos Aires"~"CABA",
-                          TRUE~provincia))
+                             TRUE~provincia))
 
 puna7 <- data_graph5 %>%
   mutate(name = as.factor(str_to_title(name)),
          provincia = str_wrap(provincia, 20),
-    provincia = tidytext::reorder_within(provincia, value, name)) %>% 
+         provincia = tidytext::reorder_within(provincia, value, name)) %>% 
   ggplot() +
   geom_col(aes(provincia, value, fill = name), width = 0.8) +
   scale_fill_dnmye() +
@@ -590,12 +590,12 @@ data_graph6 <- puna %>%
   ungroup() %>% 
   pivot_longer(c("establecimientos","plazas"))%>% 
   mutate(provincia=case_when(provincia=="Ciudad Autónoma de Buenos Aires"~"CABA",
-                          TRUE~provincia))
+                             TRUE~provincia))
 
 puna8 <- data_graph6 %>%
   mutate(name = as.factor(str_to_title(name)),
          provincia = str_wrap(provincia, 20),
-    provincia = tidytext::reorder_within(provincia, value, name)) %>% 
+         provincia = tidytext::reorder_within(provincia, value, name)) %>% 
   ggplot() +
   geom_col(aes(provincia, value, fill = name), width = 0.8) +
   scale_fill_dnmye() +
@@ -661,10 +661,10 @@ ranking_loc15 <- puna %>%
   select(-plazas)%>% 
   mutate(provincia=case_when(provincia=="Ciudad Autónoma de Buenos Aires"~"CABA",
                              provincia=="Ciudad Autonoma de Buenos Aires"~"CABA",
-                          TRUE~provincia),
+                             TRUE~provincia),
          localidad=case_when(localidad=="Ciudad Autonoma de Buenos Aires"~"CABA",
                              localidad=="Ciudad Autónoma de Buenos Aires"~"CABA",
-                          TRUE~localidad))
+                             TRUE~localidad))
 
 plazas2021 <- puna %>% 
   filter(anio == Anio) %>% 
@@ -676,10 +676,10 @@ ranking_loc <- puna %>%
   group_by(provincia, localidad) %>% 
   mutate(provincia=case_when(provincia=="Ciudad Autónoma de Buenos Aires"~"CABA",
                              provincia=="Ciudad Autonoma de Buenos Aires"~"CABA",
-                          TRUE~provincia),
+                             TRUE~provincia),
          localidad=case_when(localidad=="Ciudad Autonoma de Buenos Aires"~"CABA",
                              localidad=="Ciudad Autónoma de Buenos Aires"~"CABA",
-                          TRUE~localidad)) %>%  
+                             TRUE~localidad)) %>%  
   summarise(plazas = sum(plazas)) %>% 
   ungroup() %>% 
   slice_max(plazas, n = 30) %>% 
@@ -691,14 +691,14 @@ ranking_loc <- puna %>%
 tabla3 <- ranking_loc %>% 
   select(rank15, rank, localidad, plazas, participacion) %>% 
   gt() %>% 
-   cols_label(
+  cols_label(
     rank15 = md("**Posición 2015**"),
     rank = md(glue("**Posición {Anio}**")),
     localidad = md("**Localidad**"),
     plazas = md("**Plazas**"),
     participacion  = md("**Participación**") 
   ) %>% 
-    #gt_theme_dnmye() %>% 
+  #gt_theme_dnmye() %>% 
   fmt_number(columns = 4, decimals = 0,  dec_mark = ",", sep_mark = ".") %>% 
   fmt_percent(columns = 5, decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   cols_align(
@@ -709,7 +709,7 @@ tabla3 <- ranking_loc %>%
   ) %>%
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a datos del PUNA")
+      "**Fuente**: DMyE en base a datos del PUNA")
   ) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T) %>% 
@@ -763,7 +763,7 @@ puna10 <- total %>%
   scale_y_percent() +
   theme_minimal() +
   theme(legend.position = "bottom") +
-  labs(x = "", y = "", fill = "", caption = "Fuente: DNMyE en base a datos del PUNA")
+  labs(x = "", y = "", fill = "", caption = "Fuente: DMyE en base a datos del PUNA")
 
 #VARIABLES PARA TEXTO 
 
@@ -828,7 +828,7 @@ puna11 <- total %>%
   scale_y_percent() +
   theme_minimal() +
   theme(legend.position = "bottom") +
-  labs(x = "", y = "", fill = "", caption = "Fuente: DNMyE en base a datos del PUNA")
+  labs(x = "", y = "", fill = "", caption = "Fuente: DMyE en base a datos del PUNA")
 
 #VARIABLES PARA TEXTO
 
@@ -898,7 +898,7 @@ tabla_nac <- ranking_cad %>%
   filter(origen_de_la_cadena == "nacional") %>% 
   select(rank21, rank22, cadena_hotelera, plazas) %>% 
   gt() %>% 
-   cols_label(
+  cols_label(
     rank21 = md("**Posición 2022**"),
     rank22 = md(glue("**Posición {Anio}**")),
     cadena_hotelera = md("**Nombre**"),
@@ -914,7 +914,7 @@ tabla_nac <- ranking_cad %>%
   ) %>%
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a datos del PUNA")
+      "**Fuente**: DMyE en base a datos del PUNA")
   ) %>% 
   tab_header(title = "Cadenas Nacionales") %>% 
   sub_missing(everything(), missing_text = "-") %>% 
@@ -929,7 +929,7 @@ tabla_int <- ranking_cad %>%
   filter(origen_de_la_cadena == "internacional") %>% 
   select(rank21, rank22, cadena_hotelera, plazas) %>% 
   gt() %>% 
-   cols_label(
+  cols_label(
     rank21 = md("**Posición 2022**"),
     rank22 = md(glue("**Posición {Anio}**")),
     cadena_hotelera = md("**Nombre**"),
@@ -942,9 +942,9 @@ tabla_int <- ranking_cad %>%
     columns = c(rank21, rank22, plazas))  %>% 
   tab_source_note(
     source_note = md(
-      "**Fuente**: DNMyE en base a datos del PUNA")
+      "**Fuente**: DMyE en base a datos del PUNA")
   ) %>% 
-    tab_header(title = "Cadenas Internacionales") %>% 
+  tab_header(title = "Cadenas Internacionales") %>% 
   sub_missing(everything(), missing_text = "-") %>% 
   tab_caption(caption = glue("Ranking de las principales cadenas internacionales según plazas. Total país. Año {Anio}."))
 
@@ -969,7 +969,7 @@ Al igual que en el resto de los capítulos, se debe considerar que el año anali
 
 
 eoh <- herramientas::read_file_srv("/srv/DataDNMYE/eoh/bases/eoh.rds") %>% 
-  filter(anio>=2010 & anio<=anio_ref)
+  filter(anio >= 2010 & anio <= anio_ref)
 
 ```
 
@@ -983,27 +983,27 @@ eoh <- herramientas::read_file_srv("/srv/DataDNMYE/eoh/bases/eoh.rds") %>%
 
 eoh1 <- eoh %>%
   group_by(anio) %>% 
-  summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
-            pern_res=sum(p5_tr2*wr,na.rm = TRUE),
-            pern_nores=sum(p5_tn2*wr,na.rm = TRUE)) %>%
-  mutate(var_1=round((pern_totales/lag(pern_totales,1)-1),3),
-         var_2=round((pern_res/lag(pern_res,1)-1),3),
-         var_3=round((pern_nores/lag(pern_nores,1)-1),3),
-         var_1b=round((pern_totales/lag(pern_totales,3)-1),3),
-         var_2b=round((pern_res/lag(pern_res,3)-1),3),
-         var_3b=round((pern_nores/lag(pern_nores,3)-1),3),
-         prop_res=round(pern_res/pern_totales,3),
-         prop_nores=round(pern_nores/pern_totales,3),
+  summarise(pern_totales = sum(p5_t2*wr, na.rm = TRUE),
+            pern_res = sum(p5_tr2*wr, na.rm = TRUE),
+            pern_nores = sum(p5_tn2*wr, na.rm = TRUE)) %>%
+  mutate(var_1 = round((pern_totales/lag(pern_totales,1) - 1),3),
+         var_2 = round((pern_res/lag(pern_res,1) - 1),3),
+         var_3 = round((pern_nores/lag(pern_nores,1) - 1),3),
+         var_1b = round((pern_totales/lag(pern_totales, 4)-1),3), #Actualizar
+         var_2b = round((pern_res/lag(pern_res, 4)-1),3), #Actualizar
+         var_3b = round((pern_nores/lag(pern_nores, 4)-1),3), 
+         prop_res = round(pern_res/pern_totales,3),
+         prop_nores = round(pern_nores/pern_totales,3),
          var_1b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_1b),
+                          TRUE~var_1b),
          var_2b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_2b),
+                          TRUE~var_2b),
          var_3b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_3b)) %>%
+                          TRUE~var_3b)) %>%
   mutate(anio=as.character(anio))
 
-    
-if (anio_ref %in% c(2021,2022)) {
+
+if (anio_ref %in% c(2022, 2023)) {
   eoh1 <- eoh1 %>% select(anio,pern_totales,var_1,var_1b,pern_res,var_2,var_2b,prop_res,pern_nores,var_3,var_3b,prop_nores)
 } else {
   eoh1 <- eoh1 %>% select(anio,pern_totales,var_1,pern_res,var_2,prop_res,pern_nores,var_3,prop_nores)
@@ -1048,7 +1048,7 @@ eoh1 %>%
     columns = everything())%>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_spanner(label = "Totales", columns = c(2:4)) %>% 
   tab_spanner(label = "Residentes", columns = c(5:8)) %>% 
   tab_spanner(label = "No residentes", columns = c(9:12)) %>%
@@ -1083,20 +1083,20 @@ eoh2 <- eoh %>%
   mutate(var_1=round((viaj_totales/lag(viaj_totales,1)-1),3),
          var_2=round((viaj_res/lag(viaj_res,1)-1),3),
          var_3=round((viaj_nores/lag(viaj_nores,1)-1),3),
-         var_1b=round((viaj_totales/lag(viaj_totales,3)-1),3),
-         var_2b=round((viaj_res/lag(viaj_res,3)-1),3),
-         var_3b=round((viaj_nores/lag(viaj_nores,3)-1),3),
-         prop_res=round(viaj_res/viaj_totales,3),
-         prop_nores=round(viaj_nores/viaj_totales,3),
+         var_1b=round((viaj_totales/lag(viaj_totales, 4)-1),3),#Actualizar
+         var_2b=round((viaj_res/lag(viaj_res, 4)-1),3),#Actualizar
+         var_3b=round((viaj_nores/lag(viaj_nores, 4)-1),3),#Actualizar
+         prop_res=round(viaj_res/viaj_totales, 3),
+         prop_nores=round(viaj_nores/viaj_totales, 3),
          var_1b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_1b),
+                          TRUE~var_1b),
          var_2b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_2b),
+                          TRUE~var_2b),
          var_3b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_3b)) %>% 
+                          TRUE~var_3b)) %>% 
   mutate(anio=as.character(anio))
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh2 <- eoh2 %>% select(anio,viaj_totales,var_1,var_1b,viaj_res,var_2,var_2b,prop_res,viaj_nores,var_3,var_3b,prop_nores)
 } else {
   eoh2 <- eoh2 %>% select(anio,viaj_totales,var_1,viaj_res,var_2,prop_res,viaj_nores,var_3,prop_nores)
@@ -1142,7 +1142,7 @@ eoh2 %>%
     columns = everything())%>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_spanner(label = "Totales", columns = c(2:4)) %>% 
   tab_spanner(label = "Residentes", columns = c(5:8)) %>% 
   tab_spanner(label = "No residentes", columns = c(9:12)) %>%
@@ -1173,7 +1173,7 @@ rm(eoh2)
 #Insumo:
 
 eoh3 <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-2)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1) | anio==2019) %>% 
   group_by(anio) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1188,8 +1188,8 @@ eoh3 <- eoh %>%
   mutate(variable=case_when(str_detect(indicador, "pern")~"Pernoctes",
                             str_detect(indicador, "viaj")~"Viajeros"),
          residencia=case_when(str_detect(indicador, "_totales")~"Total",
-                            str_detect(indicador, "_res")~"Residentes",
-                            str_detect(indicador, "_nores")~"No residentes")) %>% 
+                              str_detect(indicador, "_res")~"Residentes",
+                              str_detect(indicador, "_nores")~"No residentes")) %>% 
   select(anio,variable,residencia,valor) %>% 
   mutate(valor=round(valor/1000000,1)) %>% 
   arrange(desc(anio))
@@ -1198,27 +1198,27 @@ eoh3 <- eoh %>%
 ```
 
 
-```{r eoh3, fig.cap=glue("Pernoctaciones y viajeros (en millones) hospedados en establecimientos hoteleros y parahoteleros por condición de residencia. Total país. Años {anio_ref-2}-{anio_ref}.")}
+```{r eoh3, fig.cap=glue("Pernoctaciones y viajeros (en millones) hospedados en establecimientos hoteleros y parahoteleros por condición de residencia. Total país. Años {2019}-{anio_ref}.")}
 
 # Gráfico en ggplot
 
 ggplot(data=eoh3 %>% 
          filter(residencia !="Total")
-       %>% mutate(anio=factor(anio,levels = c(anio_ref-2,anio_ref-1,anio_ref))),aes(x=anio,
-                     y=valor,
-                     fill=residencia,
-                     label=format(valor,decimal.mark = ",")))+
-  geom_col()+
+       %>% mutate(anio=factor(anio,levels = c(2019,anio_ref-1,anio_ref))),aes(x=anio,
+                                                                              y=valor,
+                                                                              fill=residencia,
+                                                                              label=format(valor,decimal.mark = ","))) +
+  geom_col() +
   geom_label(fill="white",size=2.5,position = position_stack(vjust = .5)) +
-  facet_wrap(~variable)+
-  scale_fill_dnmye(palette="dicotomica")+
-  theme_minimal()+
+  facet_wrap(~variable) +
+  scale_fill_dnmye(palette="dicotomica") +
+  theme_minimal() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         plot.subtitle=element_text(colour = dnmye_colores("gris oscuro")),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
@@ -1236,7 +1236,7 @@ ggplot(data=eoh3 %>%
 #Insumo
 
 eoh4 <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-2)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) %>% 
   group_by(anio) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1255,38 +1255,38 @@ eoh4 <- eoh %>%
                              indicador=="em_res"~"Residentes",
                              indicador=="em_nores"~"No Residentes"))
 
-if (anio_ref %in% c(2021,2022)) {
-  eoh4 <- eoh4 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-2))
+if (anio_ref %in% c(2022,2023)) { # Actualizar
+  eoh4 <- eoh4 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019))
 } else {
-  eoh4 <- eoh4 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-2))
+  eoh4 <- eoh4 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019))
 }
 
 ```
 
 Las **estadías promedio** (expresadas en noches) ascendieron a `r format(round(1*eoh4[nrow(eoh4)-2,3],2),decimal.mark = ",",big.mark = ".")` (por debajo de la estadías observadas en los últimos dos años). Cuando se diferencia por residencia, los residentes presentan estadías más elevadas que los no residentes: `r format(round(1*eoh4[nrow(eoh4)-1,3],2),decimal.mark = ",",big.mark = ".")` vs `r format(round(1*eoh4[nrow(eoh4),3],2),decimal.mark = ",",big.mark = ".")`.
 
-```{r eoh4, fig.cap=glue("Estadía promedio (en noches) de los viajeros por año, según condición de residencia. Años {anio_ref-2}-{anio_ref}.")}
+```{r eoh4, fig.cap=glue("Estadía promedio (en noches) de los viajeros por año, según condición de residencia. Años {2019}-{anio_ref}.")}
 
 #Estadía promedio de los viajeros por año, según condición de residencia.
 
 #Gráfico en ggplot:
 
-ggplot(data = eoh4 %>% mutate(anio=factor(anio,levels = c(anio_ref-2,anio_ref-1,anio_ref)),
+ggplot(data = eoh4 %>% mutate(anio=factor(anio,levels = c(2019, anio_ref-1,anio_ref)),
                               indicador=factor(indicador,levels = c("Total","Residentes","No Residentes"))),
-       aes(y=valor,x=indicador,label=format(round(valor,1),decimal.mark = ","),fill=indicador))+
-  facet_wrap(~anio)+
-  geom_col()+
-  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25)+
+       aes(y=valor,x=indicador,label=format(round(valor,1),decimal.mark = ","),fill=indicador)) +
+  facet_wrap(~anio) +
+  geom_col() +
+  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25) +
   scale_fill_manual(values = c("Residentes" = dnmye_colores("rosa"),
                                "No Residentes" = dnmye_colores("cian"),
-                               "Total" = dnmye_colores("gris oscuro")))+
-  theme_minimal()+
+                               "Total" = dnmye_colores("gris oscuro"))) +
+  theme_minimal() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         plot.subtitle=element_text(colour = dnmye_colores("gris oscuro")),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
@@ -1294,8 +1294,8 @@ ggplot(data = eoh4 %>% mutate(anio=factor(anio,levels = c(anio_ref-2,anio_ref-1,
         panel.grid = element_blank(),
         legend.title = element_blank(),
         legend.position='none',
-        axis.text.x = element_text (angle=90))+
-  scale_y_continuous(limits = c(0,max(eoh4$valor)+.2))
+        axis.text.x = element_text (angle=90)) +
+  scale_y_continuous(limits = c(0,max(eoh4$valor) +.2))
 
 
 rm(eoh4)
@@ -1308,7 +1308,7 @@ rm(eoh4)
 #Insumo:
 
 eoh5 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,indice_de_tiempo) %>%
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1321,18 +1321,18 @@ eoh5 <- eoh %>%
          var_2b=(pern_res/lag(pern_res,24)-1),
          var_3b=(pern_nores/lag(pern_nores,24)-1),
          var_1b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_1b),
+                          TRUE~var_1b),
          var_2b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_2b),
+                          TRUE~var_2b),
          var_3b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_3b)) %>%
+                          TRUE~var_3b)) %>%
   filter(anio==anio_ref) %>% 
   mutate(var_1=case_when(is.infinite(var_1)~NA_real_,
-                            TRUE~var_1),
+                         TRUE~var_1),
          var_2=case_when(is.infinite(var_2)~NA_real_,
-                           TRUE~var_2),
+                         TRUE~var_2),
          var_3=case_when(is.infinite(var_3)~NA_real_,
-                           TRUE~var_3))%>% 
+                         TRUE~var_3))%>% 
   mutate(mes=month(indice_de_tiempo)) %>% 
   mutate(mes=case_when(mes==1~"Ene",mes==2~"Feb",mes==3~"Mar",mes==4~"Abr",
                        mes==5~"May",mes==6~"Jun",mes==7~"Jul",mes==8~"Ago",
@@ -1340,8 +1340,8 @@ eoh5 <- eoh %>%
   select(mes,everything(),-c(anio,indice_de_tiempo))
 
 #Selección de variaciones vs 2019 (para el anuario 2021).
-  
-if (anio_ref %in% c(2021,2022)) {
+
+if (anio_ref %in% c(2022,2023)) {
   eoh5 <- eoh5 %>% select(mes,pern_totales,var_1,var_1b,pern_res,var_2,var_2b,pern_nores,var_3,var_3b)
 } else {
   eoh5 <- eoh5 %>% select(mes,pern_totales,var_1,pern_res,var_2,pern_nores,var_3)
@@ -1411,7 +1411,7 @@ eoh5 %>%
     source_note = "(///) Dato que no corresponde presentar debido a la naturaleza de las cosas") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -1427,7 +1427,7 @@ rm(eoh5,ranking_total,ranking_res,ranking_nores)
 #Insumo:
 
 eoh6 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,indice_de_tiempo) %>%
   summarise(viaj_totales=sum(p5_t1*wr,na.rm = TRUE),
             viaj_res=sum(p5_tr1*wr,na.rm = TRUE),
@@ -1440,18 +1440,18 @@ eoh6 <- eoh %>%
          var_2b=(viaj_res/lag(viaj_res,24)-1),
          var_3b=(viaj_nores/lag(viaj_nores,24)-1),
          var_1b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_1b),
+                          TRUE~var_1b),
          var_2b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_2b),
+                          TRUE~var_2b),
          var_3b=case_when(anio != anio_ref~NA_real_,
-                            TRUE~var_3b)) %>%
+                          TRUE~var_3b)) %>%
   filter(anio==anio_ref) %>% 
   mutate(var_1=case_when(is.infinite(var_1)~NA_real_,
-                           TRUE~var_1),
+                         TRUE~var_1),
          var_2=case_when(is.infinite(var_2)~NA_real_,
-                           TRUE~var_2),
+                         TRUE~var_2),
          var_3=case_when(is.infinite(var_3)~NA_real_,
-                           TRUE~var_3))%>% 
+                         TRUE~var_3))%>% 
   mutate(mes=month(indice_de_tiempo)) %>% 
   mutate(mes=case_when(mes==1~"Ene",mes==2~"Feb",mes==3~"Mar",mes==4~"Abr",
                        mes==5~"May",mes==6~"Jun",mes==7~"Jul",mes==8~"Ago",
@@ -1461,7 +1461,7 @@ eoh6 <- eoh %>%
 
 #Selección de variaciones vs 2019 para el anuario 2021.
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh6 <- eoh6 %>% select(mes,viaj_totales,var_1,var_1b,viaj_res,var_2,var_2b,viaj_nores,var_3,var_3b)
 } else {
   eoh6 <- eoh6 %>% select(mes,viaj_totales,var_1,viaj_res,var_2,viaj_nores,var_3)
@@ -1534,7 +1534,7 @@ eoh6 %>%
     source_note = "(///) Dato que no corresponde presentar debido a la naturaleza de las cosas") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -1549,7 +1549,7 @@ rm(eoh6,ranking_total,ranking_res,ranking_nores)
 #Insumo:
 
 eoh7 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,region_de_destino) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1563,11 +1563,11 @@ eoh7 <- eoh %>%
          var_3b=round((pern_nores/lag(pern_nores,14)-1),3)) %>%
   filter(anio==anio_ref) 
 
-  if (anio_ref %in% c(2021,2022)) {
-    eoh7 <- eoh7 %>% select(region_de_destino,pern_totales,var_1,var_1b,pern_res,var_2,var_2b,pern_nores,var_3,var_3b)
-  } else {
-    eoh7 <- eoh7 %>% select(region_de_destino,pern_totales,var_1,pern_res,var_2,pern_nores,var_3)
-  }
+if (anio_ref %in% c(2022,2023)) {
+  eoh7 <- eoh7 %>% select(region_de_destino,pern_totales,var_1,var_1b,pern_res,var_2,var_2b,pern_nores,var_3,var_3b)
+} else {
+  eoh7 <- eoh7 %>% select(region_de_destino,pern_totales,var_1,pern_res,var_2,pern_nores,var_3)
+}
 
 ranking <- eoh7 %>% 
   arrange(pern_totales)
@@ -1617,7 +1617,7 @@ eoh7 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))
 
 rm(eoh7, ranking, ranking_nores, ranking_res)
 
@@ -1628,7 +1628,7 @@ rm(eoh7, ranking, ranking_nores, ranking_res)
 # Insumo:
 
 eoh8 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>%
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>%
   group_by(anio,region_de_destino) %>% 
   summarise(viaj_totales=sum(p5_t1*wr,na.rm = TRUE),
             viaj_res=sum(p5_tr1*wr,na.rm = TRUE),
@@ -1643,7 +1643,7 @@ eoh8 <- eoh %>%
   filter(anio==anio_ref) %>% 
   select(region_de_destino,viaj_totales,var_1,var_1b,viaj_res,var_2,var_2b,viaj_nores,var_3,var_3b)
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh8 <- eoh8 %>% select(region_de_destino,viaj_totales,var_1,var_1b,viaj_res,var_2,var_2b,viaj_nores,var_3,var_3b)
 } else {
   eoh8 <- eoh8 %>% select(region_de_destino,viaj_totales,var_1,viaj_res,var_2,viaj_nores,var_3)
@@ -1750,7 +1750,7 @@ eoh9 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))
 
 rm(eoh9)
 
@@ -1763,7 +1763,7 @@ rm(eoh9)
 #Insumo:
 
 eoh10_total <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-3)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) %>% 
   group_by(anio) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1775,7 +1775,7 @@ eoh10_total <- eoh %>%
 
 
 eoh10_total <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-3)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) %>% 
   group_by(anio,region_de_destino) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -1796,7 +1796,7 @@ eoh10_total <- eoh %>%
          var_1b=round((em_total/lag(em_total,16)-1),3),
          var_2b=round((em_res/lag(em_res,16)-1),3),
          var_3b=round((em_nores/lag(em_nores,16)-1),3))
-  
+
 
 ranking <- eoh10_total %>%
   filter(anio==anio_ref) %>% 
@@ -1817,21 +1817,21 @@ ranking_nores <- eoh10_total %>%
   filter(region_de_destino!="TOTAL PAÍS") %>%
   arrange(em_nores)%>% 
   select(1,4,7,10)
-  
-  
-  
+
+
+
 eoh10_total <- eoh10_total %>%   
   mutate(region_de_destino=factor(region_de_destino,
                                   levels =c("TOTAL PAÍS","Buenos Aires",
-                                             "CABA","Córdoba",
-                                             "Cuyo","Litoral","Norte","Patagonia"))) %>% 
+                                            "CABA","Córdoba",
+                                            "Cuyo","Litoral","Norte","Patagonia"))) %>% 
   arrange(anio,region_de_destino) %>%
   filter(anio==anio_ref) %>% 
   mutate(em_total=round(em_total,1),
          em_res=round(em_res,1),
          em_nores=round(em_nores,1))
-  
-if (anio_ref %in% c(2021,2022)) {
+
+if (anio_ref %in% c(2022, 2023)) {
   eoh10_total <- eoh10_total %>% select(region_de_destino,em_total,var_1,var_1b,em_res,var_2,var_2b,em_nores,var_3,var_3b)
 } else {
   eoh10_total <- eoh10_total %>% select(region_de_destino,em_total,var_1,em_res,var_2,em_nores,var_3)
@@ -1844,6 +1844,9 @@ if (anio_ref %in% c(2021,2022)) {
 Las mayores estadías se registraron en la región **`r ranking[nrow(ranking),1]`** (`r format(round(1*ranking[nrow(ranking),2],1),decimal.mark = ",",big.mark = ".")` noches), ubicándose en segundo lugar **`r ranking[nrow(ranking)-1,1]`** (`r format(round(1*ranking[nrow(ranking)-1,2],1),decimal.mark = ",",big.mark = ".")` noches) y luego **`r ranking[nrow(ranking)-2,1]`** (`r format(round(1*ranking[nrow(ranking)-2,2],1),decimal.mark = ",",big.mark = ".")` noches).
 
 Al diferenciar las estadías según residencia, los residentes presentan mismo ranking que a nivel total; mientras que en el caso de los **no residentes**, las estadías más altas se presentaron en **`r ranking_nores[nrow(ranking_nores),1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores),2],1),decimal.mark = ",",big.mark = ".")` noches), seguida por **`r ranking_nores[nrow(ranking_nores)-1,1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores)-1,2],1),decimal.mark = ",",big.mark = ".")` noches) y **`r ranking_nores[nrow(ranking_nores)-2,1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores)-2,2],1),decimal.mark = ",",big.mark = ".")` noches).
+
+
+# ver
 
 
 ```{r eoh10  }
@@ -1876,7 +1879,7 @@ eoh10_total %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(rows = 1)
@@ -1890,7 +1893,7 @@ eoh10_total %>%
   tab_options(container.height = 600,
               container.overflow.y = T)
 
-rm(eoh10_total,eoh10,ranking,ranking_res,ranking_nores)
+# rm(eoh10_total,eoh10,ranking,ranking_res,ranking_nores)
 
 ```
 
@@ -1929,27 +1932,27 @@ eoh11 <- eoh %>%
 
 # Gráfico en ggplot
 
-ggplot(data = eoh11 %>% mutate(indicador=factor(indicador,levels = c("Total","Residentes","No Residentes"))), aes(y=valor,x=region_de_destino,label=format(valor,decimal.mark = ","),fill=indicador,group=indicador))+
-  geom_bar(stat='identity',position="dodge")+
-  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25)+
-  theme_minimal()+
+ggplot(data = eoh11 %>% mutate(indicador=factor(indicador,levels = c("Total","Residentes","No Residentes"))), aes(y=valor,x=region_de_destino,label=format(valor,decimal.mark = ","),fill=indicador,group=indicador)) +
+  geom_bar(stat='identity',position="dodge") +
+  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25) +
+  theme_minimal() +
   scale_fill_manual(values = c("Residentes" = dnmye_colores("rosa"),
                                "No Residentes" = dnmye_colores("cian"),
-                               "Total" = dnmye_colores("gris oscuro")))+
+                               "Total" = dnmye_colores("gris oscuro"))) +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         plot.subtitle=element_text(colour = dnmye_colores("gris oscuro")),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
         panel.grid = element_blank(),
         legend.title = element_blank(),
-        legend.position = "bottom")+
-  scale_y_continuous(limits = c(0,max(eoh11$valor)+.2))
+        legend.position = "bottom") +
+  scale_y_continuous(limits = c(0,max(eoh11$valor) +.2))
 
 rm(eoh11)
 
@@ -2049,17 +2052,17 @@ En la región **Buenos Aires**, la mayor cantidad de pernoctes de residentes se 
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Buenos Aires"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"),vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"),vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+ 
+  scale_color_dnmye() + 
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2076,8 +2079,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Buenos 
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_ba_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_ba_res$valor/1000) +100))
 
 rm(ranking_ba_nores,ranking_ba_res)
 
@@ -2093,19 +2096,19 @@ En **CABA**, **`r ranking_caba_res[nrow(ranking_caba_res),3]`** fue el mes con m
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="CABA"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
   ggrepel::geom_text_repel(color=dnmye_colores("gris oscuro"),
                            direction = "y",min.segment.length = 3,
-                           nudge_y = 10)+
+                           nudge_y = 10) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2122,8 +2125,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="CABA"),
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_caba_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_caba_res$valor/1000) +100))
 
 rm(ranking_caba_nores,ranking_caba_res)
 
@@ -2137,17 +2140,17 @@ En **Córdoba**, **`r ranking_cor_res[nrow(ranking_cor_res),3]`** presentó la m
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Córdoba"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2164,8 +2167,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Córdob
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_cor_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_cor_res$valor/1000) +100))
 
 rm(ranking_cor_res,ranking_cor_nores)
 
@@ -2178,17 +2181,17 @@ Fue **`r ranking_cuy_res[nrow(ranking_cuy_res),3]`** el mes con más cantidad de
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Cuyo"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2205,8 +2208,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Cuyo"),
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_cuy_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_cuy_res$valor/1000) +100))
 
 rm(ranking_cuy_res,ranking_cuy_nores)
 
@@ -2219,17 +2222,17 @@ En la región **Litoral**, el mayor valor de pernoctes residentes se registró e
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Litoral"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2246,8 +2249,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Litoral
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_lit_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_lit_res$valor/1000) +100))
 
 rm(ranking_lit_res,ranking_lit_nores)
 
@@ -2260,17 +2263,17 @@ Pasando a la región **Norte**, **`r ranking_nor_res[nrow(ranking_nor_res),3]`**
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Norte"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2287,8 +2290,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Norte")
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_nor_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_nor_res$valor/1000) +100))
 
 rm(ranking_nor_res,ranking_nor_nores)
 
@@ -2301,17 +2304,17 @@ Finalmente, en **Patagonia**, **`r ranking_pat_res[nrow(ranking_pat_res),3]`** p
 #Gráfico en ggplot:
 
 ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Patagonia"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2328,8 +2331,8 @@ ggplot(data=eoh12 %>% filter(indicador !="Totales" & region_de_destino=="Patagon
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_pat_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_pat_res$valor/1000) +100))
 
 rm(ranking_pat_res,ranking_pat_nores)
 
@@ -2425,17 +2428,17 @@ Al analizar la estacionalidad de los viajeros en las regiones, se observa que en
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Buenos Aires"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2452,8 +2455,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Buenos 
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_ba_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_ba_res$valor/1000) +100))
 
 rm(ranking_ba_nores,ranking_ba_res)
 
@@ -2466,19 +2469,19 @@ En **CABA**, **`r ranking_caba_res[nrow(ranking_caba_res),3]`** evidenció el ma
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="CABA"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
   ggrepel::geom_text_repel(color=dnmye_colores("gris oscuro"),
                            direction = "y",min.segment.length = 3,
-                           nudge_y = 10)+
+                           nudge_y = 10) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2495,8 +2498,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="CABA"),
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_caba_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_caba_res$valor/1000) +100))
 
 rm(ranking_caba_nores,ranking_caba_res)
 
@@ -2509,17 +2512,17 @@ En **Córdoba**, **`r ranking_cor_res[nrow(ranking_cor_res),3]`** lideró el ran
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Córdoba"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2536,8 +2539,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Córdob
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_cor_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_cor_res$valor/1000) +100))
 
 rm(ranking_cor_res,ranking_cor_nores)
 
@@ -2550,17 +2553,17 @@ El mes que se destacó en la **Región Cuyo** fue **`r ranking_cuy_res[nrow(rank
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Cuyo"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2577,8 +2580,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Cuyo"),
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_cuy_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_cuy_res$valor/1000) +100))
 
 rm(ranking_cuy_res,ranking_cuy_nores)
 
@@ -2591,17 +2594,17 @@ En **Litoral**, el mayor volumen de viajeros residentes se registró en **`r ran
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Litoral"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2618,8 +2621,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Litoral
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_lit_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_lit_res$valor/1000) +100))
 
 rm(ranking_lit_res,ranking_lit_nores)
 
@@ -2632,17 +2635,17 @@ En la región **Norte**, **`r ranking_nor_res[nrow(ranking_nor_res),3]`** fue el
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Norte"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2659,8 +2662,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Norte")
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_nor_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_nor_res$valor/1000) +100))
 
 rm(ranking_nor_res,ranking_nor_nores)
 
@@ -2673,17 +2676,17 @@ Por último, en **Patagonia**, el mes con mayor cantidad de viajeros residentes 
 #Gráfico en ggplot:
 
 ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Patagonia"),
-       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ",")))+
-  geom_line(linewidth=2,alpha = 0.7)+
-  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1)+
+       aes(x=indice_de_tiempo,y=valor/1000,color=indicador, label=format(round(valor/1000,1),decimal.mark = ","))) +
+  geom_line(linewidth=2,alpha = 0.7) +
+  geom_text(color=dnmye_colores("gris oscuro"), vjust=-1) +
   geom_point(size=3,alpha = 0.7) +
-  scale_color_dnmye()+
+  scale_color_dnmye() +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
   theme(plot.caption  = element_text(hjust = 0),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
         plot.title=element_text(hjust = 0,face="bold"),
@@ -2700,8 +2703,8 @@ ggplot(data=eoh13 %>% filter(indicador !="Totales" & region_de_destino=="Patagon
         axis.text.x = element_text (angle=0)) + 
   scale_x_date(date_breaks = "1 months",
                date_labels = "%b",
-               expand = c(0,20))+
-  scale_y_continuous(limits = c(0,max(ranking_pat_res$valor/1000)+100))
+               expand = c(0,20)) +
+  scale_y_continuous(limits = c(0,max(ranking_pat_res$valor/1000) +100))
 
 rm(ranking_pat_res,ranking_pat_nores)
 
@@ -2714,7 +2717,7 @@ rm(ranking_pat_res,ranking_pat_nores)
 #Insumo:
 
 eoh14_total <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,categoria_del_hotel) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE)) %>%
   pivot_wider(names_from = categoria_del_hotel,
@@ -2728,7 +2731,7 @@ eoh14_total <- eoh %>%
 
 
 eoh14 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,region_de_destino,categoria_del_hotel) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE)) %>%
   pivot_wider(names_from = categoria_del_hotel,
@@ -2753,13 +2756,13 @@ eoh14 <- eoh %>%
          var_1b=round((total_hoteleros/lag(total_hoteleros,16)-1),3)) %>%
   filter(anio==anio_ref)  
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh14 <- eoh14 %>% select(region_de_destino,total_hoteleros,var_1,var_1b,`4_5_est`,var_2,var_2b,`3_est`,
                             var_3,var_3b,`1_2_est`,var_4,var_4b,para_hoteles,var_5,var_5b)
-  } else {
-    eoh14 <- eoh14 %>% select(region_de_destino,total_hoteleros,var_1,`4_5_est`,var_2,`3_est`,
+} else {
+  eoh14 <- eoh14 %>% select(region_de_destino,total_hoteleros,var_1,`4_5_est`,var_2,`3_est`,
                             var_3,`1_2_est`,var_4,para_hoteles,var_5)
-  } 
+} 
 
 rankinghotel <- eoh14 %>% 
   filter(region_de_destino!="Total País") %>%
@@ -2771,7 +2774,7 @@ ranking4_5 <- eoh14 %>%
   filter(region_de_destino!="Total País") %>%
   arrange(`4_5_est`) %>% 
   select(1,5:7)
-  
+
 
 ranking3 <- eoh14 %>% 
   filter(region_de_destino!="Total País") %>%
@@ -2844,7 +2847,7 @@ eoh14 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(
@@ -2871,7 +2874,7 @@ rm(eoh14,rankinghotel,ranking4_5,ranking3,ranking1_2,rankingpara)
 #Insumo:
 
 eoh15_total <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,categoria_del_hotel) %>% 
   summarise(viaj_totales=sum(p5_t1*wr,na.rm = TRUE)) %>%
   pivot_wider(names_from = categoria_del_hotel,
@@ -2885,7 +2888,7 @@ eoh15_total <- eoh %>%
 
 
 eoh15 <- eoh %>%
-  filter(anio==anio_ref | anio==anio_ref-1 | anio==anio_ref-3) %>% 
+  filter(anio==anio_ref | anio==anio_ref-1 | anio==2019) %>% 
   group_by(anio,region_de_destino,categoria_del_hotel) %>% 
   summarise(viaj_totales=sum(p5_t1*wr,na.rm = TRUE)) %>%
   pivot_wider(names_from = categoria_del_hotel,
@@ -2918,12 +2921,12 @@ eoh15 <- eoh %>%
 
 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh15 <- eoh15 %>% select(region_de_destino,total_hoteleros,var_1,var_1b,`4_5_est`,var_2,var_2b,`3_est`,
-                          var_3,var_3b,`1_2_est`,var_4,var_4b,para_hoteles,var_5,var_5b)
+                            var_3,var_3b,`1_2_est`,var_4,var_4b,para_hoteles,var_5,var_5b)
 } else {
   eoh15 <- eoh15 %>% select(region_de_destino,total_hoteleros,var_1,`4_5_est`,var_2,`3_est`,
-                          var_3,`1_2_est`,var_4,para_hoteles,var_5)
+                            var_3,`1_2_est`,var_4,para_hoteles,var_5)
 }
 
 rm(eoh15_total)
@@ -2938,7 +2941,7 @@ ranking4_5 <- eoh15 %>%
   filter(region_de_destino!="TOTAL PAÍS") %>%
   arrange(`4_5_est`) %>% 
   select(1,5:7)
-  
+
 
 ranking3 <- eoh15 %>% 
   filter(region_de_destino!="TOTAL PAÍS") %>%
@@ -2963,7 +2966,7 @@ eoh15 <- eoh15 %>%
                                             "Córdoba",
                                             "Cuyo","Litoral","Norte","Patagonia"))) %>% 
   arrange(region_de_destino) 
-  
+
 
 ```
 
@@ -3007,7 +3010,7 @@ eoh15 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(
@@ -3034,7 +3037,7 @@ rm(eoh15,rankinghotel,ranking4_5,ranking3,ranking1_2,rankingpara)
 #Insumo:
 
 eoh16 <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1)| anio==(anio_ref-2)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1)| anio==(2019)) %>% 
   group_by(anio,categoria_del_hotel) %>% 
   summarise(Pernoctes=round(sum(p5_t2*wr,na.rm = TRUE)/1000000,1),
             Viajeros=round(sum(p5_t1*wr,na.rm = TRUE)/1000000,1)) %>%
@@ -3044,8 +3047,8 @@ eoh16 <- eoh %>%
   mutate(categoria_del_hotel=case_when(categoria_del_hotel=="3 estrellas/boutiques/aparts"~"3 est/bout/apart",
                                        TRUE~categoria_del_hotel))
 
-if (anio_ref %in% c(2021,2022)) {
-  eoh16 <- eoh16 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-2))
+if (anio_ref %in% c(2022,2023)) {
+  eoh16 <- eoh16 %>% filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019))
 } else {
   eoh16 <- eoh16 %>% filter(anio==anio_ref | anio==(anio_ref-1))
 }
@@ -3070,28 +3073,28 @@ ranking_viaj <- eoh16 %>%
 
 Sin diferenciar por región de destino, en `r anio_texto` fueron los establecimientos **`r ranking_pern[nrow(ranking_pern),2]`** los que registraron mayor cantidad de pernoctaciones; mientras que en los establecimientos **`r ranking_viaj[nrow(ranking_viaj),2]`** se observó el mayor volumen de viajeros hospedados.
 
-```{r eoh16, fig.cap=glue("Pernoctaciones y viajeros hospedados (en millones) en establecimientos hoteleros y parahoteleros por categoría del establecimiento. Años {anio_ref-2}-{anio_ref}.")}
+```{r eoh16, fig.cap=glue("Pernoctaciones y viajeros hospedados (en millones) en establecimientos hoteleros y parahoteleros por categoría del establecimiento. Años {2019}-{anio_ref}.")}
 
 #Pernoctaciones y viajeros hospedados en establecimientos hoteleros y parahoteleros por categoría del establecimiento.
 
 #Gra´fico en ggplot:
 
 ggplot(data = eoh16%>% 
-         mutate(anio=factor(anio,levels = c(anio_ref-2,anio_ref-1,anio_ref)),
+         mutate(anio=factor(anio,levels = c(2019,anio_ref-1,anio_ref)),
                 categoria_del_hotel=factor(categoria_del_hotel,
                                            levels = c("4 y 5 estrellas","3 est/bout/apart",
                                                       "1 y 2 estrellas","Para Hoteles"))),
-       aes(x=categoria_del_hotel, y=valor,label=format(valor,decimal.mark = ","),fill=anio,group=anio))+
-  geom_col(position = "dodge")+
-  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25)+
-  facet_wrap(~indicador)+
+       aes(x=categoria_del_hotel, y=valor,label=format(valor,decimal.mark = ","),fill=anio,group=anio)) +
+  geom_col(position = "dodge") +
+  geom_label(fill="white",size=2.5, position=position_dodge(width=0.9),vjust=0.25) +
+  facet_wrap(~indicador) +
   labs(title = "",
        subtitle = "",
        x = "",
        y = "",
        colour="",
-       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")+
-  theme_minimal()+
+       caption = "Fuente: Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).") +
+  theme_minimal() +
   theme(plot.caption  = element_text(hjust = 0),
         plot.subtitle=element_text(colour = dnmye_colores("gris oscuro")),
         axis.title.y = element_text(colour = dnmye_colores("gris oscuro")),
@@ -3099,11 +3102,11 @@ ggplot(data = eoh16%>%
         panel.grid = element_blank(),
         legend.title = element_blank(),
         axis.text.x = element_text(angle = 90),
-        legend.position = "bottom")+
+        legend.position = "bottom") +
   scale_fill_manual(values = c(dnmye_colores("rosa"),
                                dnmye_colores("cian"),
-                               dnmye_colores("purpura")))+
-  scale_y_continuous(limits = c(0, (max(eoh16$valor))+2))
+                               dnmye_colores("purpura"))) +
+  scale_y_continuous(limits = c(0, (max(eoh16$valor)) +2))
 
 rm(eoh16,ranking_pern,ranking_viaj)
 
@@ -3114,7 +3117,7 @@ rm(eoh16,ranking_pern,ranking_viaj)
 #Insumo:
 
 eoh17_hoteles <- eoh %>%
-  filter((anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-3)) & categoria_del_hotel!="Para Hoteles") %>% 
+  filter((anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) & categoria_del_hotel!="Para Hoteles") %>% 
   group_by(anio) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -3126,7 +3129,7 @@ eoh17_hoteles <- eoh %>%
 
 
 eoh17 <- eoh %>%
-  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-3)) %>% 
+  filter(anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) %>% 
   group_by(anio,categoria_del_hotel) %>% 
   summarise(pern_totales=sum(p5_t2*wr,na.rm = TRUE),
             pern_res=sum(p5_tr2*wr,na.rm = TRUE),
@@ -3159,14 +3162,14 @@ eoh17 <- eoh %>%
                                               "1 y 2 estrellas","PARA HOTELEROS"))) %>% 
   arrange(categoria_del_hotel)
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh17a <- eoh17 %>% select(categoria_del_hotel,pern_totales,var_1,var_1b,pern_res,var_2,var_2b,pern_nores,var_3,var_3b)
 } else {
   eoh17a <- eoh17 %>% select(categoria_del_hotel,pern_totales,var_1,pern_res,var_2,pern_nores,var_3)
 }
 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh17b <- eoh17 %>% select(categoria_del_hotel,viaj_totales,var_4,var_4b,viaj_res,var_5,var_5b,viaj_nores,var_6,var_6b)
 } else {
   eoh17b <- eoh17 %>% select(categoria_del_hotel,viaj_totales,var_4,viaj_res,var_5,viaj_nores,var_6)
@@ -3226,7 +3229,7 @@ eoh17a %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(
@@ -3239,8 +3242,8 @@ eoh17a %>%
     ),
     locations = cells_body(rows = c(1,5)
     )) #%>% 
-  #tab_options(container.height = 600,
-              #container.overflow.y = T)
+#tab_options(container.height = 600,
+#container.overflow.y = T)
 
 rm(eoh17a,ranking_nores,ranking_res)
 
@@ -3304,7 +3307,7 @@ eoh17b %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(
@@ -3344,24 +3347,24 @@ eoh18 <- eoh %>%
   mutate(var_1=round((establecimientos/lag(establecimientos,1)-1),3),
          var_2=round((plazas_disp/lag(plazas_disp,1)-1),3),
          var_3=(top-lag(top,1))*100,
-         var_1b=round((establecimientos/lag(establecimientos,3)-1),3),
-         var_2b=round((plazas_disp/lag(plazas_disp,3)-1),3),
+         var_1b=round((establecimientos/lag(establecimientos,4)-1),3),
+         var_2b=round((plazas_disp/lag(plazas_disp,4)-1),3),
          var_3b=(top-lag(top,3))*100) %>%
   mutate(var_1b=case_when(anio==anio_ref~var_1b,
-                            TRUE~NA_real_),
+                          TRUE~NA_real_),
          var_2b=case_when(anio==anio_ref~var_2b,
-                            TRUE~NA_real_),
+                          TRUE~NA_real_),
          var_3b=case_when(anio==anio_ref~var_3b,
-                            TRUE~NA_real_)) %>% 
+                          TRUE~NA_real_)) %>% 
   mutate(var_1=case_when(anio==2010~0.006,
-                           TRUE~var_1),
+                         TRUE~var_1),
          var_2=case_when(anio==2010~0.018,
-                           TRUE~var_2),
+                         TRUE~var_2),
          var_3=case_when(anio==2010~13.0,
-                           TRUE~var_3)) %>% 
+                         TRUE~var_3)) %>% 
   mutate(anio=as.character(anio))
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh18 <- eoh18 %>% select(anio,establecimientos,var_1,var_1b,plazas_disp,var_2,var_2b,top,var_3,var_3b)
 } else {
   eoh18 <- eoh18 %>% select(anio,establecimientos,var_1,plazas_disp,var_2,top,var_3)
@@ -3401,7 +3404,7 @@ eoh18 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(rows = nrow(eoh18))
@@ -3424,7 +3427,7 @@ rm(eoh18)
 #Insumo:
 
 eoh19 <- eoh %>%
-  filter(anio==anio_ref |anio==anio_ref-1 |anio==anio_ref-3) %>% 
+  filter(anio==anio_ref |anio==anio_ref-1 |anio==2019) %>% 
   group_by(anio,region_de_destino) %>% 
   summarise(establecimientos=round(sum(establecimientos*wr,na.rm = TRUE)/12,0),
             plazas_disp=sum(plazas_disp*wr,na.rm = TRUE),
@@ -3438,8 +3441,8 @@ eoh19 <- eoh %>%
          var_2b=round((plazas_disp/lag(plazas_disp,14)-1),3),
          var_3b=(top-lag(top,14))) %>%
   filter(anio==anio_ref)
-  
-if (anio_ref %in% c(2021,2022)) {
+
+if (anio_ref %in% c(2022,2023)) {
   eoh19 <- eoh19 %>% select(region_de_destino,establecimientos,var_1,var_1b,plazas_disp,var_2,var_2b,top,var_3,var_3b)
 } else {
   eoh19 <- eoh19 %>% select(region_de_destino,establecimientos,var_1,plazas_disp,var_2,top,var_3)
@@ -3491,7 +3494,7 @@ eoh19 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -3505,7 +3508,7 @@ rm(eoh19,ranking_est,ranking_plazas)
 #Insumo:
 
 eoh20_hoteleros <- eoh %>%
-  filter((anio==anio_ref | anio==(anio_ref-1) | anio==(anio_ref-3)) & categoria_del_hotel!="Para Hoteles") %>%  
+  filter((anio==anio_ref | anio==(anio_ref-1) | anio==(2019)) & categoria_del_hotel!="Para Hoteles") %>%  
   group_by(anio) %>% 
   summarise(establecimientos=round(sum(establecimientos*wr,na.rm = TRUE)/12,0),
             plazas_disp=sum(plazas_disp*wr,na.rm = TRUE),
@@ -3514,7 +3517,7 @@ eoh20_hoteleros <- eoh %>%
 
 
 eoh20 <- eoh %>%
-  filter(anio==anio_ref |anio==anio_ref-1 |anio==anio_ref-3) %>% 
+  filter(anio==anio_ref |anio==anio_ref-1 |anio==2019) %>% 
   group_by(anio,categoria_del_hotel) %>% 
   summarise(establecimientos=round(sum(establecimientos*wr,na.rm = TRUE)/12,0),
             plazas_disp=sum(plazas_disp*wr,na.rm = TRUE),
@@ -3532,11 +3535,11 @@ eoh20 <- eoh %>%
   mutate(categoria_del_hotel=case_when(categoria_del_hotel=="3 estrellas/boutiques/aparts"~"3 est/bout/apart",
                                        TRUE~categoria_del_hotel)) %>% 
   filter(anio==anio_ref) %>%mutate(categoria_del_hotel=factor(categoria_del_hotel,
-                                    levels =c("Total Hoteleros","4 y 5 estrellas","3 est/bout/apart",
-                                              "1 y 2 estrellas","Para Hoteles"))) %>% 
+                                                              levels =c("Total Hoteleros","4 y 5 estrellas","3 est/bout/apart",
+                                                                        "1 y 2 estrellas","Para Hoteles"))) %>% 
   arrange(categoria_del_hotel)
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh20 <- eoh20 %>% select(categoria_del_hotel,establecimientos,var_1,var_1b,plazas_disp,var_2,var_2b,top,var_3,var_3b)
 } else {
   eoh20 <- eoh20 %>% select(categoria_del_hotel,establecimientos,var_1,plazas_disp,var_2,top,var_3)
@@ -3597,7 +3600,7 @@ eoh20 %>%
     missing_text = "///") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC)."))%>%
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC)."))%>%
   tab_style(
     style = cell_fill(dnmye_colores("gris claro")),
     locations = cells_body(rows = c(1,5))
@@ -3619,7 +3622,7 @@ rm(eoh20, ranking_est, ranking_plazas)
 #Insumo:
 
 eoh21 <- eoh %>%
-  filter(anio==anio_ref |anio==anio_ref-1 |anio==anio_ref-3) %>% 
+  filter(anio==anio_ref |anio==anio_ref-1 |anio==2019) %>% 
   group_by(indice_de_tiempo) %>% 
   summarise(establecimientos=round(sum(establecimientos*wr,na.rm = TRUE),0),
             plazas_disp=sum(plazas_disp*wr,na.rm = TRUE),
@@ -3633,18 +3636,18 @@ eoh21 <- eoh %>%
          var_2b=round((plazas_disp/lag(plazas_disp,24)-1),3),
          var_3b=(top-lag(top,24))*100) %>% 
   mutate(var_1=case_when(is.infinite(var_1)~NA_real_,
-                           TRUE~var_1),
+                         TRUE~var_1),
          var_2=case_when(is.infinite(var_2)~NA_real_,
-                           TRUE~var_2),
+                         TRUE~var_2),
          var_3=case_when(is.infinite(var_3)~NA_real_,
-                           TRUE~var_3)) %>%  
+                         TRUE~var_3)) %>%  
   filter(year(indice_de_tiempo)==anio_ref) %>% 
   mutate(mes=month(indice_de_tiempo)) %>% 
   mutate(mes=case_when(mes==1~"Ene",mes==2~"Feb",mes==3~"Mar",mes==4~"Abr",
                        mes==5~"May",mes==6~"Jun",mes==7~"Jul",mes==8~"Ago",
                        mes==9~"Sep",mes==10~"Oct",mes==11~"Nov",mes==12~"Dic")) 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh21 <- eoh21 %>% select(mes,establecimientos,var_1,var_1b,plazas_disp,var_2,var_2b,top,var_3,var_3b)
 } else {
   eoh21 <- eoh21 %>% select(mes,establecimientos,var_1,plazas_disp,var_2,top,var_3)
@@ -3708,7 +3711,7 @@ eoh21 %>%
     source_note = "(*) Datos correspondientes a los días viernes y sábados del mes") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -3735,7 +3738,7 @@ eoh22 <- eoh %>%
   mutate(var_1b=case_when(anio==anio_ref~top-lag(top,3))) %>% 
   mutate(anio=as.character(anio))
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh22 <- eoh22 %>% select(anio,top,var_1,var_1b)
 } else {
   eoh22 <- eoh22 %>% select(anio,top,var_1)
@@ -3784,7 +3787,7 @@ eoh22 %>%
     source_note = "(*) Datos correspondientes a los días viernes y sábados del mes") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -3825,7 +3828,7 @@ eoh23 <- eoh %>%
 
 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh23 <- eoh23 %>% select(categoria_del_hotel,top,var_1,var_1b)
 } else {
   eoh23 <- eoh23 %>% select(categoria_del_hotel,top,var_1)
@@ -3881,7 +3884,7 @@ eoh23 %>%
     source_note = "(*) Datos correspondientes a los días viernes y sábados del mes") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) 
 
 rm(eoh23, ranking)
 
@@ -3916,7 +3919,7 @@ eoh24 <- eoh %>%
   filter(anio==anio_ref)
 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh24 <- eoh24 %>% select(region_de_destino,top,var_1,var_1b)
 } else {
   eoh24 <- eoh24 %>% select(region_de_destino,top,var_1)
@@ -3930,8 +3933,8 @@ ranking <- eoh24 %>%
 
 eoh24 <- eoh24 %>%
   mutate(region_de_destino=factor(region_de_destino,levels = c("TOTAL","Buenos Aires",
-                                                                   "CABA","Córdoba","Cuyo",
-                                                                   "Litoral","Norte","Patagonia"))) %>% 
+                                                               "CABA","Córdoba","Cuyo",
+                                                               "Litoral","Norte","Patagonia"))) %>% 
   arrange(region_de_destino)
 
 
@@ -3974,7 +3977,7 @@ eoh24 %>%
     source_note = "(*) Datos correspondientes a los días viernes y sábados del mes") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -3988,7 +3991,7 @@ rm(eoh24, ranking)
 #Insumo:
 
 eoh25 <- eoh %>%
-  filter(anio==anio_ref |anio==anio_ref-1 |anio==anio_ref-3) %>% 
+  filter(anio==anio_ref |anio==anio_ref-1 |anio==2019) %>% 
   group_by(indice_de_tiempo) %>% 
   summarise(plazas_disp=sum(plazas_dispfds*wr,na.rm = TRUE),
             pernoctes=sum(p1_33*wr,na.rm = TRUE)) %>% 
@@ -3999,16 +4002,16 @@ eoh25 <- eoh %>%
          var_2b=round((plazas_disp/lag(plazas_disp,24)-1),3),
          var_3b=(top-lag(top,24))) %>% 
   mutate(var_2=case_when(is.infinite(var_2)~NA_real_,
-                           TRUE~var_2),
+                         TRUE~var_2),
          var_3=case_when(is.infinite(var_3)~NA_real_,
-                           TRUE~var_3)) %>%  
+                         TRUE~var_3)) %>%  
   filter(year(indice_de_tiempo)==anio_ref) %>% 
   mutate(mes=month(indice_de_tiempo)) %>% 
   mutate(mes=case_when(mes==1~"Ene",mes==2~"Feb",mes==3~"Mar",mes==4~"Abr",
                        mes==5~"May",mes==6~"Jun",mes==7~"Jul",mes==8~"Ago",
                        mes==9~"Sep",mes==10~"Oct",mes==11~"Nov",mes==12~"Dic")) 
 
-if (anio_ref %in% c(2021,2022)) {
+if (anio_ref %in% c(2022,2023)) {
   eoh25 <- eoh25 %>% select(mes,top,var_3,var_3b)
 } else {
   eoh25 <- eoh25 %>% select(mes,top,var_3)
@@ -4055,7 +4058,7 @@ eoh25 %>%
     source_note = "(///) Dato que no corresponde presentar debido a la naturaleza de las cosas") %>%
   tab_source_note(
     source_note = md(
-      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DNMyE e INDEC).")) %>% 
+      "**Fuente:** Encuesta de Ocupación Hotelera (EOH) - (DMyE e INDEC).")) %>% 
   tab_options(container.height = 600,
               container.overflow.y = T)
 
@@ -4066,7 +4069,7 @@ rm(eoh25, ranking)
 
 ### Recursos disponibles
 
-Los datos que se muestran en este capítulo forman parte del Sistema de Información Turística de la Argentina (SINTA) <https://www.yvera.tur.ar/sinta/>{target="_blank"} de la Dirección Nacional de Mercados y Estadística (DNMyE). Los mismos se presentan a traves de distintos formatos:
+Los datos que se muestran en este capítulo forman parte del Sistema de Información Turística de la Argentina (SINTA) <https://www.yvera.tur.ar/sinta/>{target="_blank"} de la Dirección de Mercados y Estadística (DNMyE). Los mismos se presentan a traves de distintos formatos:
 
 -   [Informes:](https://www.yvera.tur.ar/sinta/informe/info/encuesta-de-ocupacion-hotelera-eoh){target="_blank"} **La Encuesta de Ocupación Hotelera** es una publicación mensual de la evolución de la actividad hotelera del país desde una perspectiva de la oferta de quienes brindan el servicio de alojamiento.
 

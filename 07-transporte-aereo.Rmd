@@ -304,7 +304,7 @@ cabotaje %>%
 
 vuelos_x_mes <- cabotaje %>% 
   group_by(anio_local, mes_local) %>% 
-  summarise(vuelos = sum(vuelos, na.rm = T)) %>% 
+  summarise(vuelos = round(sum(vuelos, na.rm = T), 0)) %>% 
   pivot_wider(names_from = "anio_local",
               values_from = "vuelos") %>% 
   mutate(mes_local = lubridate::month(dmy(paste("01", mes_local, anio - 1, sep = "-")),
@@ -870,13 +870,13 @@ freq_caba <- freq_reg_prov_loc[2,16] %>%
   pull %>%
   format(., big.mark = ".")
 
-freq_cordoba_loc <- freq_reg_prov_loc[3,3] %>% pull
-freq_cordoba <- freq_reg_prov_loc[3,16] %>% 
+freq_cordoba_loc <- freq_reg_prov_loc[4,3] %>% pull
+freq_cordoba <- freq_reg_prov_loc[4,16] %>% 
   pull %>%
   format(., big.mark = ".")
 
-freq_cuyo_loc <- freq_reg_prov_loc[4,3] %>% pull
-freq_cuyo <- freq_reg_prov_loc[4,16] %>%
+freq_cuyo_loc <- freq_reg_prov_loc[3,3] %>% pull
+freq_cuyo <- freq_reg_prov_loc[3,16] %>%
   pull %>%
   format(., big.mark = ".")
 
@@ -987,9 +987,9 @@ freq_ciudad_dest_actual <- freq_ciudad_dest_actual %>%
          destino_localidad_etiqueta = case_when(posicion_actual >= 20 ~ "Resto",
                                                 T ~ destino_localidad_etiqueta)) %>%
   group_by(destino_localidad_etiqueta) %>% 
-  summarise(frecuencias_actual = sum(frecuencias_actual),
-            frecuencias_anterior = sum(frecuencias_anterior),
-            frecuencias_base = sum(frecuencias_base),
+  summarise(frecuencias_actual = sum(frecuencias_actual, na.rm = T),
+            frecuencias_anterior = sum(frecuencias_anterior, na.rm = T),
+            frecuencias_base = sum(frecuencias_base, na.rm = T),
             posicion_actual = first(posicion_actual),
             posicion_anterior = first(posicion_anterior),
             posicion_base = first(posicion_base)) %>% 
@@ -1629,7 +1629,7 @@ internacional <- base_total %>%
 vuelos_int <- internacional %>% 
   filter(destino_pais_etiqueta == "Argentina") %>% 
   group_by(anio_local, origen_pais_etiqueta, origen_localidad_etiqueta) %>% 
-  summarise(vuelos = sum(vuelos, na.rm = t)) %>% 
+  summarise(vuelos = sum(vuelos, na.rm = T)) %>% 
   filter(vuelos >= 48) %>%
   group_by(anio_local) %>% 
   summarise(ciudades = n_distinct(origen_localidad_etiqueta),
@@ -2341,7 +2341,7 @@ internacional_x_ciudad <- internacional %>%
   mutate(origen_localidad_etiqueta = case_when(prop <= 0.03 ~ "Resto",
                                                T ~ origen_localidad_etiqueta)) %>% 
   group_by(origen_localidad_etiqueta) %>% 
-  summarise(frecuencias = sum(frecuencias)) %>%
+  summarise(frecuencias = sum(frecuencias, na.rm = T)) %>%
   mutate(prop = round(frecuencias/sum(frecuencias, na.rm = T)*100, 1)) %>%
   arrange(-frecuencias) 
 
@@ -2349,9 +2349,9 @@ ciudad_int_orig_primer <- (internacional_x_ciudad %>% filter(origen_localidad_et
 ciudad_int_orig_segund <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[2,1] %>% pull()
 ciudad_int_orig_tercer <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[3,1] %>% pull()
 
-ciudad_int_orig_primer_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[1,2] %>% pull()
-ciudad_int_orig_segund_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[2,2] %>% pull()
-ciudad_int_orig_tercer_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[3,2] %>% pull()
+ciudad_int_orig_primer_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[1,2] %>% pull() %>% format(., big.mark = ".")
+ciudad_int_orig_segund_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[2,2] %>% pull() %>% format(., big.mark = ".")
+ciudad_int_orig_tercer_frq <- (internacional_x_ciudad %>% filter(origen_localidad_etiqueta != "Resto"))[3,2] %>% pull() %>% format(., big.mark = ".")
 
 ```
 
@@ -2392,12 +2392,12 @@ internacional_x_ciudad %>%
 ```{r}
 vuelos_int_actual <- internacional %>% 
   filter(origen_pais_etiqueta != "Argentina") %>% 
-  filter( anio_local == anio) %>%
+  filter(anio_local == anio) %>%
   group_by(origen_localidad_etiqueta) %>% 
   summarise(frecuencias_actual = n()) %>% 
   arrange(-frecuencias_actual) %>% 
   mutate(posicion_actual = 1:n(),
-         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual), 2))
+         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual, na.rm = T), 3))
 
 vuelos_int_anterior <- internacional %>% 
   filter(origen_pais_etiqueta != "Argentina") %>% 
@@ -2419,20 +2419,20 @@ vuelos_int <- vuelos_int_actual %>%
   full_join(vuelos_int_anterior, by = "origen_localidad_etiqueta") %>% 
   full_join(vuelos_int_base, by = "origen_localidad_etiqueta") %>% 
   filter(!is.na(posicion_actual) & !is.na(posicion_anterior) & !is.na(posicion_base)) %>% 
-  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 2),
-         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 2),
+  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 3),
+         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 3),
          origen_localidad_etiqueta = case_when(posicion_actual >= 20 ~ "Resto",
                                                T ~ origen_localidad_etiqueta)) %>%
   group_by(origen_localidad_etiqueta) %>% 
-  summarise(frecuencias_actual = sum(frecuencias_actual),
-            frecuencias_anterior = sum(frecuencias_anterior),
-            frecuencias_base = sum(frecuencias_base),
+  summarise(frecuencias_actual = sum(frecuencias_actual, na.rm = T),
+            frecuencias_anterior = sum(frecuencias_anterior, na.rm = T),
+            frecuencias_base = sum(frecuencias_base, na.rm = T),
             posicion_actual = first(posicion_actual),
             posicion_anterior = first(posicion_anterior),
             posicion_base = first(posicion_base)) %>% 
-  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 2),
-         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 2),
-         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual), 3),
+  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 3),
+         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 3),
+         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual, na.rm = T), 3),
          posicion_actual = case_when(origen_localidad_etiqueta == "Resto" ~ "-",
                                      T ~ as.character(posicion_actual)),
          posicion_anterior = case_when(origen_localidad_etiqueta == "Resto" ~ "-",
@@ -2649,7 +2649,7 @@ tabla_10_aerocomercial <- internacional %>%
                                                T ~ origen_localidad_etiqueta)) %>% 
   group_by(origen_pais_etiqueta, origen_localidad_etiqueta, mes_local, .drop = F) %>% 
   summarise(frecuencias = n()) %>%
-  filter(sum(frecuencias) >= 24,) %>% 
+  filter(sum(frecuencias, na.rm = T) >= 24,) %>% 
   mutate(mes_local = str_to_sentence(mes_local)) %>% 
   pivot_wider(names_from = mes_local, values_from = frecuencias) %>%
   drop_na(origen_pais_etiqueta) %>% 
@@ -2688,13 +2688,13 @@ int_ranking_aero <- internacional %>%
                                        T ~ as.character(empresa_agrup_def))) %>%
   group_by(empresa_agrup_def, .drop = F) %>% 
   summarise(frecuencias = sum(vuelos, na.rm = T)) %>% 
-  mutate(pct = round(frecuencias/sum(frecuencias)*100, 1)) %>% 
+  mutate(pct = round(frecuencias/sum(frecuencias, na.rm = T)*100, 1)) %>% 
   arrange(-pct) %>% 
   mutate(empresa_agrup_def = case_when(pct < 3 ~ "Otras Aerolíneas",
                                        T ~ empresa_agrup_def)) %>% 
   group_by(empresa_agrup_def) %>% 
-  summarise(frecuencias = sum(frecuencias)) %>% 
-  mutate(pct = round(frecuencias/sum(frecuencias)*100, 1)) %>% 
+  summarise(frecuencias = sum(frecuencias, na.rm = T)) %>% 
+  mutate(pct = round(frecuencias/sum(frecuencias, na.rm = T)*100, 1)) %>% 
   arrange(-pct)
 
 rank_aero_int_primer <- (int_ranking_aero %>%
@@ -2775,7 +2775,7 @@ aerolineas_int_actual <- internacional %>%
   ungroup() %>% 
   arrange(desc(frecuencias_actual)) %>% 
   mutate(posicion_actual = 1:n(),
-         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual), 2))
+         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual, na.rm = T), 3))
 
 aerolineas_int_anterior <- internacional %>% 
   filter(origen_pais_etiqueta != "Argentina") %>% 
@@ -2801,20 +2801,20 @@ aerolineas_int <- aerolineas_int_actual %>%
   full_join(aerolineas_int_anterior, by = "empresa_agrup_def") %>% 
   full_join(aerolineas_int_base, by = "empresa_agrup_def") %>% 
   filter(!is.na(posicion_actual) & !is.na(posicion_anterior) & !is.na(posicion_base)) %>% 
-  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 2),
-         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 2),
+  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 3),
+         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 3),
          empresa_agrup_def = case_when(posicion_actual >= 20 ~ "Resto",
                                        T ~ empresa_agrup_def)) %>%
   group_by(empresa_agrup_def) %>% 
-  summarise(frecuencias_actual = sum(frecuencias_actual),
-            frecuencias_anterior = sum(frecuencias_anterior),
-            frecuencias_base = sum(frecuencias_base),
+  summarise(frecuencias_actual = sum(frecuencias_actual, na.rm = T),
+            frecuencias_anterior = sum(frecuencias_anterior, na.rm = T),
+            frecuencias_base = sum(frecuencias_base, na.rm = T),
             posicion_actual = first(posicion_actual),
             posicion_anterior = first(posicion_anterior),
             posicion_base = first(posicion_base)) %>% 
-  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 2),
-         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 2),
-         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual), 3),
+  mutate(variacion = round((frecuencias_actual - frecuencias_anterior)/frecuencias_anterior, 3),
+         variacion_base = round((frecuencias_actual - frecuencias_base)/frecuencias_base, 3),
+         participacion_actual = round(frecuencias_actual/sum(frecuencias_actual, na.rm = T), 3),
          posicion_actual = case_when(empresa_agrup_def == "Resto" ~ "-",
                                      T ~ as.character(posicion_actual)),
          posicion_anterior = case_when(empresa_agrup_def == "Resto" ~ "-",
@@ -2963,7 +2963,7 @@ aeros_int <- internacional %>%
          destino_localidad_etiqueta = case_when(pct <= 1 ~ "Otros",
                                                 T ~ destino_localidad_etiqueta)) %>% 
   group_by(destino_aeropuerto_etiqueta, destino_localidad_etiqueta) %>% 
-  summarise(frecuencias = sum(frecuencias)) %>%
+  summarise(frecuencias = sum(frecuencias, na.rm = T)) %>%
   ungroup() %>% 
   mutate(pct = round(frecuencias/sum(frecuencias, na.rm = T)*100, 1)) %>% 
   arrange(-frecuencias)
@@ -3155,8 +3155,8 @@ herfindah_aero_int <- (herfintal_aerolinea_int %>%
                          mutate(across(.cols=c(2:4), ~ .*100)))[1,4] %>% pull %>% format(., decimal.mark = ",")
 
 herfindah_aero_int_cond <- if_else((herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,4] < (herfintal_aerolinea_int %>% mutate(across(.cols = c(2:4), ~ .*100)))[1,3],
-                                   paste0("una reducción de ", (herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,4]-(herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,3]),
-                                   paste0("un crecimiento de ", (herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,4]-(herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,3]))
+                                   paste0("una reducción de ", round((herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,4]-(herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,3], 2)),
+                                   paste0("un crecimiento de ", round((herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,4]-(herfintal_aerolinea_int %>% mutate(across(.cols=c(2:4), ~ .*100)))[1,3], 2)))
 
 aeros_int_actual <- n_distinct(herfintal_aero_int_actual$empresa_agrup_def)
 aeros_int_anterior <- n_distinct(herfintal_aero_int_anterior$empresa_agrup_def)

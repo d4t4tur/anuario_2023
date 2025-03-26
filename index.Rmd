@@ -26,62 +26,14 @@ knitr::opts_chunk$set(out.width = '100%', fig.align = 'center')
 
 # Autoridades Nacionales {-}
 
-**PRESIDENTE DE LA NACIÓN**
-
-Dr. Alberto Fernández
-
-**JEFE DE GABINETE DE MINISTROS**
-
-Ing. Agustín Rossi
-
-**MINISTRO DE TURISMO Y DEPORTES**
-
-Dr. Matías Daniel Lammens Núñez
-
-**SUBSECRETARIA DE DESARROLLO ESTRATÉGICO**
-
-Lic. Eugenia Benedetti
 
 
-**DIRECTOR NACIONAL DE MERCADOS Y ESTADÍSTICA**
-
-Mg. Juan Pablo Ruiz Nicolini
 
 ## Equipo técnico {-}
 
 ### Coordinación {-}
 
-Mg. Juan Pablo Ruiz Nicolini
 
-Lic. Juan Urricariet
 
 ### Realización {-}
-
-Lic. Leila Abduca
-
-Lic. Victoria Ciccia
-
-Lic. Mariano Cipponeri
-
-DG Hernán Colazo
-
-Lic. Julieta Delgado
-
-Lic. Alan Geary
-
-Lic. Mariana González
-
-Lic. Juan Gabriel Juara
-
-Lic. Romina Mansilla
-
-Lic. María Guadalupe Melián
-
-Lic. Lorena Prieto
-
-Lic. Santiago Soubie
-
-Lic. Elián Soutullo
-
-Lic. Micaela Spinelli
 

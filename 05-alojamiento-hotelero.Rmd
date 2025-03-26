@@ -1845,8 +1845,7 @@ Las mayores estadías se registraron en la región **`r ranking[nrow(ranking),1]
 
 Al diferenciar las estadías según residencia, los residentes presentan mismo ranking que a nivel total; mientras que en el caso de los **no residentes**, las estadías más altas se presentaron en **`r ranking_nores[nrow(ranking_nores),1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores),2],1),decimal.mark = ",",big.mark = ".")` noches), seguida por **`r ranking_nores[nrow(ranking_nores)-1,1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores)-1,2],1),decimal.mark = ",",big.mark = ".")` noches) y **`r ranking_nores[nrow(ranking_nores)-2,1]`** (`r format(round(1*ranking_nores[nrow(ranking_nores)-2,2],1),decimal.mark = ",",big.mark = ".")` noches).
 
-
-# ver
+**VER**
 
 
 ```{r eoh10  }

@@ -21,21 +21,22 @@ library(herramientas)
 
 options(scipen = 99)
 
-Anio <- "2022"
+Anio <- "2023"
+
+anio_anterior<-'2022'
 
 ```
 
 # **Turismo Interno en Argentina** {#turismo-interno}
 ## Introducción
 
-En este capítulo se presenta un resumen de los principales indicadores del turismo interno de la Argentina resultantes de la Encuesta de Viajes y Turismo de los Hogares (EVyTH). A partir de este relevamiento se realizó una descripción del comportamiento turístico de los argentinos en 2022, como también de los resultados del turismo interno.
+En este capítulo se presenta un resumen de los principales indicadores del turismo interno de la Argentina, las caracterísiticas de las visitas y los principales resultados del comportamiento turístico en `r as.character(Anio)` (la proporción de las personas que han realizado al menos un viaje con pernocte en `r as.character(Anio)`). 
 
-El objetivo de la EVyTH es medir y caracterizar el flujo y el gasto de los viajes turísticos (viajes con pernocte y visitas de un día o excursiones) que las personas residentes en Argentina realizan tanto dentro del país (turismo interno) como al exterior (turismo emisivo). En conjunto, los viajes turísticos relevados dan cuenta del turismo nacional.
+Los datos presentados provienen de la Encuesta de Viajes y Turismo de los Hogares (EVyTH), un operativo telefónico contínuo desde 2012 que encuesta mensualmente a los hogares de los grandes aglomerados urbanos del país donde reside casi dos tercios de la población total (64%); es la única fuente del país que releva información a nivel federal sobre turismo interno con rigurosidad técnica estadística (siguiendo las recomendaciones internacionales para la realización de estadísiticas de turismo doméstico). El tamaño muestral es de 2600 encuestas efectivas a hogares. Los resultados que se presentan son trimestrales, cuyos datos se pueden encontrar en el portal de datos abiertos. 
 
-Cabe destacar también que a partir de 2012 la EVyTH se realiza de manera mensual entrevistando telefónicamente unos dos mil seiscientos hogares residentes en las capitales de todas las provincias argentinas y en los aglomerados urbanos que no son capitales pero cuya población es superior a los cien mil habitantes. Sumados, ambos casos concentran actualmente casi dos tercios de la población total del país. Este relevamiento permite realizar un seguimiento pormenorizado de lo que ocurre en el turismo interno, observando y analizando las variaciones que se producen mes a mes y trimestre a trimestre, confrontándolas
-con el mismo período del año anterior.
+El objetivo de la EVyTH es medir y caracterizar el flujo y el gasto de los viajes turísticos (viajes con pernocte y visitas de un día o excursiones) que las personas residentes en Argentina realizan tanto dentro del país (turismo interno) como al exterior (turismo emisivo). En conjunto, los viajes turísticos relevados dan cuenta del turismo nacional. Entre sus objetivos la EVyTH permite computar y conocer aspectos socio-demográficos de quienes realizan los viajes y excursiones, posibilitando realizar perfiles de los visitantes y vislumbrar sus características estructurales.
 
-Gracias a la continuidad temporal en el desarrollo de la encuesta, es posible la observación sostenida de un grupo de variables, lo que permite vislumbrar las características estructurales propias de la población que realiza viajes en el país.
+Gracias a la continuidad temporal en el desarrollo de la encuesta, es posible la observación sostenida de la dinámica del turismo en el país y la población que lo realiza.
 
 ## Comportamiento turístico
 
@@ -54,7 +55,7 @@ En esta sección, se presentan los principales indicadores del turismo interno, 
 
 ```{r}
 evyth <- read_file_srv("/srv/DataDNMYE/evyth/base_trabajo/evyth_base_de_trabajo.parquet") %>% 
-  filter(anio %in% c(Anio, 2021, 2019, 2015))#MODIFICAR MANUAL CUANDO CAMBIA ANIO
+  filter(anio %in% c(2023, 2022, 2021, 2019, 2015))#MODIFICAR MANUAL CUANDO CAMBIA ANIO
 
 ```
 
@@ -153,14 +154,15 @@ data_tabla1 <- evyth %>%
                names_to = "categoria", values_to = "cantidad") %>% 
   pivot_wider(names_from = "anio", values_from = "cantidad") %>% 
    filter(!(tipo_visitante == "Excursionista" & 
-              categoria %in% c("Pernoctes","Estadia_prom","Gasto_diario")))
+              categoria %in% c("Pernoctes","Estadia_prom","Gasto_diario"))) 
 
 total <- data_tabla1 %>% 
   group_by(categoria) %>% 
   summarise(`2015` = sum(`2015`),
             `2019` = sum(`2019`),
             `2021` = sum(`2021`),#MODIFICAR MANUAL CUANDO CAMBIA ANIO
-            `2022` = sum(`2022`)) %>% #MODIFICAR MANUAL CUANDO CAMBIA ANIO
+            `2022` = sum(`2022`),
+            `2023` = sum(`2023`)) %>% #MODIFICAR MANUAL CUANDO CAMBIA ANIO
   filter(categoria %in% c("Total","Gasto")) %>% 
   mutate(tipo_visitante = "Visitantes")
 
@@ -190,8 +192,8 @@ tabla1 <- tabla1 %>%
     tipo_visitante == "Visitantes" & categoria == "Gasto" ~ "Gasto visitantes",
     TRUE ~ categoria
   ),
-  var_ia = (`2022`/`2021`)-1,#MODIFICAR MANUAL CUANDO CAMBIA ANIO
-  var_ia19 = (`2022`/`2019`)-1)#MODIFICAR MANUAL CUANDO CAMBIA ANIO
+  var_ia = (`2023`/`2022`)-1,#MODIFICAR MANUAL CUANDO CAMBIA ANIO
+  var_ia19 = (`2023`/`2019`)-1)#MODIFICAR MANUAL CUANDO CAMBIA ANIO
  
 tabla1_def <- tabla1 %>% 
   select(-tipo_visitante) %>% 
@@ -199,17 +201,17 @@ tabla1_def <- tabla1 %>%
    cols_label(
     categoria = "",
     unidad = "",
-    var_ia = "Var. i.a. % 2021",#MODIFICAR MANUAL CUANDO CAMBIA ANIO
+    var_ia = "Var. i.a. % 2022",#MODIFICAR MANUAL CUANDO CAMBIA ANIO
     var_ia19 = "Var. i.a. % 2019"
   ) %>% 
   tab_source_note(
     source_note = md(
       "**Fuente**: DNMyE en base a información de la EVyTH")
   ) %>% 
-  fmt_number(columns = c(`2015`:`2021`), rows = categoria == "Estadía promedio",
+  fmt_number(columns = c(`2015`:`2022`), rows = categoria == "Estadía promedio",#actualicé año anterior
              decimals = 1, dec_mark = ",") %>% 
   gt_theme_dnmye() %>% 
-  tab_caption(caption = md(glue("Visitantes, estadía promedio, pernoctes y gasto con destino en Argentina por año. Años 2015/2019/2021/{Anio}")))#MODIFICAR MANUAL CUANDO CAMBIA ANIO 
+  tab_caption(caption = md(glue("Visitantes, estadía promedio, pernoctes y gasto con destino en Argentina por año. Años 2015/2019/2021/{anio_anterior}/{Anio}")))#MODIFICAR MANUAL CUANDO CAMBIA ANIO 
 
 #VARIABLES PARA TEXTO
 
@@ -237,7 +239,7 @@ var_ia_estadia_value19 <- tabla1 %>% filter(categoria == "Estadía promedio") %>
 ```{r}
 
 data_var <- evyth %>% 
-  filter(tipo_visitante == 1, anio >= 2021)#MODIFICAR MANUAL CUANDO CAMBIA ANIO  
+  filter(tipo_visitante == 1, anio >= anio_anterior)#MODIFICAR MANUAL CUANDO CAMBIA ANIO  
 
 evyth <- evyth %>% 
   filter(tipo_visitante == 1, anio == Anio) 
